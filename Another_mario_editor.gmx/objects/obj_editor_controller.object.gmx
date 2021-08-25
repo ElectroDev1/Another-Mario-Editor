@@ -44,6 +44,18 @@ VX=0;
 VY=obj_controller.Window_H;
 
 EntitySelected=-4;
+
+//Level attributes
+World=0;
+Time=0;
+Scroll=0; //Includes scrollspeed too
+ClearCond=0;
+
+infostring="";
+infoalpha=0;
+
+temp_index=0;
+undo_time=-1;
 </string>
           </argument>
         </arguments>
@@ -89,11 +101,13 @@ EntitySelected=-4;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>    //Create the entities
+            <string>///Enter game
+instance_destroy(obj_mario_shadow);
+        //Create the entities
     with(obj_editor_entity){
          
-         child=instance_create(x+sprite_get_xoffset(global.spritemap[? Entity_id]),
-         y+sprite_get_yoffset(global.spritemap[? Entity_id]),
+         child=instance_create(x+1+sprite_get_xoffset(global.spritemap[? Entity_id]),
+         y+1+sprite_get_yoffset(global.spritemap[? Entity_id]),
          global.entitymap[? Entity_id]);
          
          switch(child.object_index){
@@ -158,6 +172,7 @@ if(state==ControlState.normal){
 
     var X=40+27*a;
 
+    //Place
     if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
     view_xview[0]+X-10,view_yview[0]+20-12,
     view_xview[0]+X+11,view_yview[0]+20+12)){
@@ -165,6 +180,9 @@ if(state==ControlState.normal){
        if(mouse_check_button_pressed(mb_left)){enitityplace=1; selected_id=a;}
     
     }
+    
+    
+    
 
  }
  
@@ -191,12 +209,14 @@ if(state==ControlState.normal){
      
      if(EntitySelected){
      
+        
         with(instance_nearest(mouse_x,mouse_y,obj_editor_entity)){ 
         
-
+ 
          instance_destroy(); 
         
         }
+        event_user(2);
      
      }
      
@@ -216,13 +236,27 @@ if(state==ControlState.normal){
 }
  
  
- 
-if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview-16,view_yview+141,10)){
+//Rubber
+if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview-16,view_yview+140,10)){
   
    if(mouse_check_button_pressed(mb_left)){state=!state global.cursor_angle=0;}
 
 }
 
+//Undo
+if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview-16,view_yview+168,10)){
+  
+   if(mouse_check_button_pressed(mb_left)){ undo_time=0; } 
+
+   if(mouse_check_button(mb_left) &amp;&amp; (undo_time&gt;=0)){
+      if(undo_time&lt;1.05){undo_time+=0.025;}else{ event_user(3); undo_time=-1; }
+   }
+   
+   
+
+}
+
+if(mouse_check_button_released(mb_left)){ undo_time=-1; } 
 
 //Up
 if(view_yview[view_current]&lt;64){view_yview[view_current]+=8; view_yview[view_current]=64;}
@@ -242,6 +276,340 @@ view_yview[view_current]-=8; view_yview[view_current]=room_height-view_hview[vie
 
 view_yview=min(view_yview,room_height-view_hview-8);
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="13">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Load temp
+temp_index--;
+if(file_exists("Temp\TempLevel_"+string(temp_index)+".sav")){
+
+
+
+   
+
+
+    //Clear the room
+    with(obj_editor_entity){instance_destroy();}
+    
+    //Get the ds grid
+    var file = file_text_open_read("Temp\TempLevel_"+string(temp_index)+".sav");
+    
+        var items = real(file_text_read_string(file));
+        
+        file_text_readln(file);
+          
+        var buffer = (file_text_read_string(file));
+          
+    file_text_close(file);
+    
+    var levelmap = /*ds_grid_read_buffer(buffer);*/ds_grid_create(11,items+1);
+    //Convert the buffer into a ds grid
+    ds_grid_read(levelmap,buffer);
+    
+        //var items = ds_grid_get(levelmap,0,0);
+        World=real(ds_grid_get(levelmap,1,0));
+        Time=real(ds_grid_get(levelmap,2,0));
+        Scroll=real(ds_grid_get(levelmap,3,0));
+        ClearCond=real(ds_grid_get(levelmap,4,0));
+        
+
+        //Create the objects
+        for(var pos=0; pos&lt;items; pos++){
+        
+            with(instance_create(
+            real(ds_grid_get(levelmap,1,pos+1)),
+            real(ds_grid_get(levelmap,2,pos+1)),
+            obj_editor_entity)){
+            
+                 Entity_id = ds_grid_get(levelmap,0,pos+1);
+                 
+                 for(var a=0; a&lt;array_length_1d(Attribute); a++){
+                     Attribute[a] = real(ds_grid_get(levelmap,a+3,pos+1));
+                 }
+            
+            }
+             show_debug_message("Item created successfully at "
+             +string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
+
+        }
+        
+        if(pos==items){
+         ds_grid_destroy(levelmap);
+        }
+      
+        file_delete("Temp\TempLevel_"+string(temp_index)+".sav");
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="12">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Save a temp file
+
+   
+          //Data structure method
+          var items = instance_number(obj_editor_entity);
+   
+          //Create the grid
+          var levelmap = ds_grid_create(11,items+1);
+   
+          ds_grid_add(levelmap,0,0,string(items));
+          ds_grid_add(levelmap,1,0,string(World));
+          ds_grid_add(levelmap,2,0,string(Time));
+          ds_grid_add(levelmap,3,0,string(Scroll));
+          ds_grid_add(levelmap,4,0,string(ClearCond));
+
+          var pos=0;
+          
+          //Entities
+          with(obj_editor_entity){
+          
+               ds_grid_add(levelmap,0,pos+1,string(Entity_id));
+               ds_grid_add(levelmap,1,pos+1,string(x));
+               ds_grid_add(levelmap,2,pos+1,string(y));
+               
+               
+               for(var a=0; a&lt;array_length_1d(Attribute); a++){
+                   ds_grid_add(levelmap, a+3, pos+1, string(Attribute[a]));
+               }
+               
+               pos++;
+          
+          }
+          
+          if(pos==items){
+          
+          //Serialize the grid to buffer
+          var buffer = /*ds_grid_write_buffer(levelmap);*/ds_grid_write(levelmap);
+   
+          //Store the buffer in a file
+          var file = file_text_open_write("Temp\TempLevel_"+string(temp_index)+".sav");
+          
+              file_text_write_string(file, string(items));
+              
+              file_text_writeln(file);
+              
+              file_text_write_string(file, string(buffer));
+          
+          file_text_close(file);
+          
+          ds_grid_destroy(levelmap);
+          
+          }
+          
+   temp_index++;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Load levels
+directory_destroy("Temp");
+
+    //Data structure method
+    infostring="Loaded level";
+    infoalpha=2;
+    
+    //Clear the room
+    with(obj_editor_entity){instance_destroy();}
+    
+    //Get the ds grid
+    var file = file_text_open_read("Levels\Level.sav");
+    
+        var items = real(file_text_read_string(file));
+        
+        file_text_readln(file);
+          
+        var buffer = (file_text_read_string(file));
+        show_debug_message("Loaded buffer ["+string(buffer)+"]");
+          
+    file_text_close(file);
+    
+    var levelmap = /*ds_grid_read_buffer(buffer);*/ds_grid_create(11,items+1);
+    //Convert the buffer into a ds grid
+    ds_grid_read(levelmap,buffer);
+    
+        //var items = ds_grid_get(levelmap,0,0);
+        World=real(ds_grid_get(levelmap,1,0));
+        Time=real(ds_grid_get(levelmap,2,0));
+        Scroll=real(ds_grid_get(levelmap,3,0));
+        ClearCond=real(ds_grid_get(levelmap,4,0));
+        
+        show_debug_message("Items found "+string(items));
+        
+
+        //Create the objects
+        for(var pos=0; pos&lt;items; pos++){
+        
+            with(instance_create(
+            real(ds_grid_get(levelmap,1,pos+1)),
+            real(ds_grid_get(levelmap,2,pos+1)),
+            obj_editor_entity)){
+            
+                 Entity_id = ds_grid_get(levelmap,0,pos+1);
+                 
+                 for(var a=0; a&lt;array_length_1d(Attribute); a++){
+                     Attribute[a] = real(ds_grid_get(levelmap,a+3,pos+1));
+                 }
+            
+            }
+             show_debug_message("Item created successfully at "
+             +string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
+
+        }
+        
+        if(pos==items){
+         ds_grid_destroy(levelmap);
+        }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Save level
+if(room==rm_editor){
+
+   /*
+   So my choice was to either use data structures which would lower how much space each
+   level file gets, or use have a list with all the properties than can be easily viewed
+   */
+   
+   //For now I'll try data structures
+   
+   /*
+   We go through all the level entities and save their indexes + special attributes based
+   on the object type
+   We also save the level attributes at the start
+   */
+   
+   infostring="Saved level";
+   infoalpha=2;
+   
+          //Data structure method
+          var items = instance_number(obj_editor_entity);
+   
+          //Create the grid
+          var levelmap = ds_grid_create(11,items+1);
+   
+          ds_grid_add(levelmap,0,0,string(items));
+          ds_grid_add(levelmap,1,0,string(World));
+          ds_grid_add(levelmap,2,0,string(Time));
+          ds_grid_add(levelmap,3,0,string(Scroll));
+          ds_grid_add(levelmap,4,0,string(ClearCond));
+
+          var pos=0;
+          
+          //Entities
+          with(obj_editor_entity){
+          
+               ds_grid_add(levelmap,0,pos+1,string(Entity_id));
+               ds_grid_add(levelmap,1,pos+1,string(x));
+               ds_grid_add(levelmap,2,pos+1,string(y));
+               
+               show_debug_message("Item loaded successfully at "
+             +string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
+              
+               for(var a=0; a&lt;array_length_1d(Attribute); a++){
+                   ds_grid_add(levelmap, a+3, pos+1, string(Attribute[a]));
+               }
+               
+               pos++;
+          
+          }
+          
+          if(pos==items){
+          
+          //Serialize the grid to buffer
+          var buffer = /*ds_grid_write_buffer(levelmap);*/ds_grid_write(levelmap);
+   
+          //Store the buffer in a file
+          var file = file_text_open_write("Levels\Level.sav");
+          
+              file_text_write_string(file, string(items));
+              
+              file_text_writeln(file);
+              
+              file_text_write_string(file, string(buffer));
+          
+          file_text_close(file);
+          
+          ds_grid_destroy(levelmap);
+          
+          }
+    
+   
+
+}
 </string>
           </argument>
         </arguments>
@@ -433,6 +801,11 @@ draw_sprite(spr_rubberUI,0,display_get_gui_width()-16,140);
 draw_sprite_ext(spr_undodog_UI,0,display_get_gui_width()-16,169,1,1,0,c_black,0.25);
 draw_sprite(spr_undodog_UI,0,display_get_gui_width()-16,168);
 
+draw_set_colour(c_black);
+
+draw_pie(display_get_gui_width()-8,176,1,1,c_black,4,1);
+draw_set_colour(c_white);
+draw_pie(display_get_gui_width()-8,176 ,max(undo_time,0), 1, c_red, 3, 1);
 
 
 
@@ -444,7 +817,16 @@ draw_surface(gui_surf,0,0);
 
 }
 
-draw_text(5,80,"Press ENTER#to play#"+string(EntitySelected));
+draw_set_colour(c_black);
+draw_text_transformed(5,80,"Press ENTER to play#Press Z to save#Press X to load",0.5,0.5,0);
+
+infoalpha=scr_approach(infoalpha,0,0.2);
+
+draw_text_transformed(5,display_get_gui_height()-20,temp_index,0.5,0.5,0);
+
+draw_set_colour(c_white);
+
+
 </string>
           </argument>
         </arguments>
@@ -554,8 +936,11 @@ if(state==ControlState.normal){
       
            Entity_id=global.selected_entity[other.selected_id];
            move_snap(16,16)
+           alarm[1]=1;
       
       }
+      
+      
    
    }
  
@@ -571,6 +956,52 @@ if(state==ControlState.normal){
    global.cursor=spr_eraser;
 
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="90">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>event_user(0);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="88">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>event_user(1);
 </string>
           </argument>
         </arguments>
@@ -597,6 +1028,7 @@ if(state==ControlState.normal){
 
 if(room==rm_editor){
         
+    
     room_set_width(rm_ingame, room_width);
     room_set_height(rm_ingame,room_height);
 
@@ -610,6 +1042,8 @@ else if(room==rm_ingame){
 
     VX=view_xview;
     VY=view_yview;
+    
+    instance_activate_object(obj_mario_shadow);
 
     with(obj_mario_editor){
        x=obj_playerparent.x;

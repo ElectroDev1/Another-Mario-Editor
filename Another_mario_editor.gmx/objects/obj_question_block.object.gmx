@@ -30,7 +30,10 @@ offset=0;
 offsetT=0;
 
 sld=-4
+sld=instance_create(x-8,y-8,obj_solid);
 alarm[1]=1;
+
+item=noone;
 </string>
           </argument>
         </arguments>
@@ -53,7 +56,8 @@ alarm[1]=1;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>sld=instance_create(x-8,y-8,obj_solid);
+            <string>instance_destroy(sld);
+sld=instance_create(x-8,y-8,obj_solid);
 </string>
           </argument>
         </arguments>
@@ -145,6 +149,16 @@ if(offset&gt;=0)&amp;&amp;(state==2){
           <argument>
             <kind>1</kind>
             <string>state=1;
+
+var coin = collision_rectangle(bbox_left+1,bbox_top-2,bbox_right-1,bbox_top+2,obj_coin,0,0);
+
+if(coin){
+
+   with(coin){
+        instance_destroy();
+   }
+
+}
 
 offsetT=-8;
 alarm[0]=10;

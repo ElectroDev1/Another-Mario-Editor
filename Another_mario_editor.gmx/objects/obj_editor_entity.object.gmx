@@ -40,6 +40,18 @@ height=16;
 
 child=-4;
 
+//Special attributes
+item=noone; //Item inside, used for container objects like blocks
+
+
+Attribute[Attributes.Mushroom]=false;
+Attribute[Attributes.Wings]=false;
+Attribute[Attributes.Direction]=0;
+Attribute[Attributes.Parachute]=false;
+Attribute[Attributes.Width]=1;
+Attribute[Attributes.Height]=1;
+
+//Delete if the space is occupied
 if(collision_rectangle(bbox_left+1,bbox_top+1,bbox_right-1,bbox_bottom-1,obj_editor_entity,0,1)){instance_destroy();}
 </string>
           </argument>
@@ -69,6 +81,29 @@ if(collision_rectangle(bbox_left+1,bbox_top+1,bbox_right-1,bbox_bottom-1,obj_edi
         </arguments>
       </action>
     </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>with(obj_editor_controller){ event_user(2); }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="2" enumb="0">
       <action>
         <libid>1</libid>
@@ -86,8 +121,10 @@ if(collision_rectangle(bbox_left+1,bbox_top+1,bbox_right-1,bbox_bottom-1,obj_edi
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Set tile
+            <string>///Update tile
 if(room==rm_editor){
+
+
 
 if(tile_exists(tile)){tile_delete(tile);}
 

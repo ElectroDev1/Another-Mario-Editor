@@ -24,7 +24,9 @@
       </datafile>
     </datafiles>
   </datafiles>
-  <NewExtensions/>
+  <NewExtensions>
+    <extension index="0">extensions\GridBuffer</extension>
+  </NewExtensions>
   <sounds name="sound"/>
   <sprites name="sprites">
     <sprites name="Collision">
@@ -87,13 +89,15 @@
     <script>scripts\scr_input_check_released.gml</script>
     <script>scripts\scr_slope_calculatepos.gml</script>
     <script>scripts\scr_collision_rectangle_list.gml</script>
+    <script>scripts\ds_grid_write_buffer.gml</script>
+    <script>scripts\draw_pie.gml</script>
   </scripts>
-  <shaders name="shaders"/>
   <fonts name="fonts">
     <font>fonts\fnt_mario</font>
   </fonts>
   <objects name="objects">
     <object>objects\obj_controller</object>
+    <object>objects\oGridBufferTest</object>
     <objects name="Collision">
       <object>objects\obj_semisolid</object>
       <object>objects\obj_slope_l</object>
@@ -128,12 +132,14 @@
       <object>objects\obj_editor_entity</object>
       <object>objects\obj_editor_controller</object>
       <object>objects\obj_mario_editor</object>
+      <object>objects\obj_mario_shadow</object>
     </objects>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_init</room>
     <room>rooms\rm_editor</room>
     <room>rooms\rm_ingame</room>
+    <room>rooms\rmGridBuffer</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

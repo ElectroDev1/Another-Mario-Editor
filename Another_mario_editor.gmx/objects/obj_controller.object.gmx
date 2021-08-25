@@ -67,6 +67,16 @@ event_user(0);
 
 global.cursor=spr_cursor;
 global.cursor_angle=0;
+
+
+enum Attributes {
+     Mushroom = 0,
+     Wings = 1,
+     Direction = 2,
+     Parachute = 3,
+     Width = 4,
+     Height = 5
+}
 </string>
           </argument>
         </arguments>
@@ -303,6 +313,8 @@ alarm[0]=1;
    
    
    file_text_close(file);
+   
+directory_destroy("Temp");
 </string>
           </argument>
         </arguments>
