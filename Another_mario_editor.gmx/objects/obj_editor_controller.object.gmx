@@ -117,7 +117,7 @@ EntitySelected=-4;
        
        if(!collision_rectangle(bbox_left+1,bbox_bottom-2,bbox_right-1,room_height,obj_semisolid,0,0)){
           for(var a=-1; a&lt;2; a++){
-              instance_create(x+16*a,bbox_bottom+8,obj_pinkplatform);
+              instance_create(x+16*a,bbox_bottom+9,obj_pinkplatform);
           }
        }
        
@@ -470,7 +470,8 @@ draw_text(5,80,"Press ENTER#to play#"+string(EntitySelected));
             <string>if(room!=rm_editor){exit;}
 
 depth=6;
-draw_background_tiled(background0,0,room_height-background_get_height(background0));
+//draw_background_tiled(background0,0,room_height-background_get_height(background0));
+draw_background(background0,view_xview-view_xview/10,room_height-background_get_height(background0));
 
 var tabheight=36;
 var tabwidth=33;

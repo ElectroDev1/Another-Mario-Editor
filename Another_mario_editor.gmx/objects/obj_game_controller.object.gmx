@@ -71,7 +71,7 @@
           <argument>
             <kind>1</kind>
             <string>depth=6;
-draw_background(background0,view_xview,room_height-background_get_height(background0));
+draw_background(background0,view_xview-view_xview/10,room_height-background_get_height(background0));
 
 </string>
           </argument>

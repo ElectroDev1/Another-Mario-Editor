@@ -42,12 +42,13 @@ Dir=1;
 
 
 
-walk_spd=3;
+walk_spd=2.5;
 
 
 Angle=0;
 
 jumpforce=6;
+spinforce=6.2;
 
 animate=1;
 
@@ -60,6 +61,13 @@ grav=grav_O;
 controlmode=1;
 
 INP=0;
+
+
+run=0;
+crouch=0;
+
+runjump=0;
+spinjump=0;
 </string>
           </argument>
         </arguments>
@@ -94,9 +102,19 @@ if(Control){
 
 //Move
 if(controlmode){
-INP = key_right-key_left;
 
-if(INP!=0){Dir=INP;}
+  if(crouch){ if(!onfloor){ INP = (key_right-key_left)/2; } }else{
+     INP = key_right-key_left;
+  }
+  
+  
+  var T=scr_input_check_pressed(input.right) - scr_input_check_pressed(input.left)
+  
+  if(T!=0)&amp;&amp;(spd==0){
+     if(Dir!=T){ Dir=T; }
+  }
+
+if(INP!=0){  Dir=scr_approach(Dir,sign(INP),0.25);;}
 
 }else{
 INP = Dir;
@@ -112,21 +130,51 @@ if(onfloor)
    if(cayote&gt;0){ cayote-=0.25; }
 }
 
+
+if(onfloor){runjump=0; spinjump=0;}
+
+
 //Jump
 if(key_jump){
 
    if(cayote&gt;0)&amp;&amp;(state!=Playerstate.jump)&amp;&amp;(!collision_rectangle(bbox_left,bbox_top-2,bbox_right,bbox_top+2,obj_solid,0,0)){
    
-      Vsp=-jumpforce;
+     if(!scr_input_check(input.up)){
+      Vsp=-jumpforce;      
+      if(spd&gt;3.5){runjump=1;}
+     }
+     else{
+     
+       Vsp-=spinforce;
+       spinjump=1;
+     
+     }
+      
       cayote=0;
    
    }
 
 }
 
-spd=walk_spd*abs(INP);
+
+
+run=scr_input_check(input.action1);
+
+if(crouch){ if(!onfloor){spd=walk_spd*abs(INP);}else{spd=scr_approach(spd,0,0.25);} 
+
+}else{
+ spd=scr_approach(spd, (walk_spd* ((0.5*run)+1) ) *abs(INP), 0.25);; 
+}
 
 event_inherited();
+
+if(y&gt;=view_yview+view_hview+38){ 
+   with(obj_editor_controller){
+        event_perform(ev_keypress, vk_enter);
+   }
+}
+
+
 </string>
           </argument>
         </arguments>
@@ -169,6 +217,9 @@ if(state!=Playerstate.death){
    
    }
    
+   if(scr_input_check(input.down)){ crouch=1; }
+   
+   
  }else{
 
    if(Vsp&lt;0){
@@ -184,6 +235,9 @@ if(state!=Playerstate.death){
  }
  
 }
+
+
+if(scr_input_check_released(input.down)){ crouch=0; }
 </string>
           </argument>
         </arguments>
@@ -207,14 +261,37 @@ if(state!=Playerstate.death){
             <string>///Animation logic
 if(!animate){exit;}
 
+if(!crouch){
+
  switch(state){
 
-       case Playerstate.idle : sprite_index=spr_mario_idle; break;
-       case Playerstate.walk : sprite_index=spr_mario_walk; image_speed=.5; break;
-       case Playerstate.fall : sprite_index=spr_mario_fall; break;
-       case Playerstate.jump : sprite_index=spr_mario_jump; break;
+       case Playerstate.idle : 
+         if(scr_input_check(input.up)){sprite_index=spr_mario_up;}else{sprite_index=spr_mario_idle;} break;
+       case Playerstate.walk :
+       
+         if(sign(Dir)!=INP)&amp;&amp;(key_right || key_left){ sprite_index=spr_mario_skid; }else{
+       
+          if(!run){ sprite_index=spr_mario_walk; }else{ sprite_index=spr_mario_run; }
+        
+        }
+        
+         
+           image_speed=.5; break;
+           
+           
+       case Playerstate.fall :  if(spinjump){ sprite_index=spr_mario_spinjump;  }else{  if(runjump){sprite_index=spr_mario_jumprun;}else{sprite_index=spr_mario_fall;} }   break;
+       
+       case Playerstate.jump :  if(spinjump){ sprite_index=spr_mario_spinjump;  }else{  if(runjump){sprite_index=spr_mario_jumprun;}else{sprite_index=spr_mario_jump;} } break;
  
  }
+ 
+ 
+}
+else{
+
+   sprite_index=spr_mario_crouch;
+
+}
 </string>
           </argument>
         </arguments>
@@ -237,10 +314,12 @@ if(!animate){exit;}
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>
-draw_sprite_ext(sprite_index,image_index,floor(x),floor(y),image_xscale*Dir,image_yscale,Angle,image_blend,image_alpha);
+            <string>if(sign(Dir)!=0){ var IX=sign(Dir); }else{ var IX=1; }
 
-draw_text(x,y-60,state);
+
+draw_sprite_ext(sprite_index,image_index,floor(x),floor(y),image_xscale*IX,image_yscale,Angle,image_blend,image_alpha);
+
+draw_text(x,y-60,spinjump);
 </string>
           </argument>
         </arguments>
