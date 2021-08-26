@@ -61,6 +61,9 @@
       <sprite>sprites\spr_menu_UI</sprite>
       <sprite>sprites\spr_rocket_UI</sprite>
       <sprite>sprites\spr_reset_rocket</sprite>
+      <sprites name="Special item icons">
+        <sprite>sprites\spr_arrow_icon</sprite>
+      </sprites>
     </sprites>
     <sprites name="In game">
       <sprites name="Blue">
@@ -70,14 +73,30 @@
         <sprite>sprites\spr_question_block</sprite>
         <sprite>sprites\spr_invisible_block</sprite>
         <sprite>sprites\spr_spiketrap</sprite>
+        <sprite>sprites\spr_cloud</sprite>
       </sprites>
       <sprites name="Green">
         <sprite>sprites\spr_coin</sprite>
+      </sprites>
+      <sprites name="Yellow">
+        <sprites name="On off switch">
+          <sprite>sprites\spr_onoff_switch_on</sprite>
+          <sprite>sprites\spr_onoff_switch_off</sprite>
+        </sprites>
+        <sprites name="On off block">
+          <sprite>sprites\spr_onoff_block_red</sprite>
+          <sprite>sprites\spr_onoff_block_blue</sprite>
+        </sprites>
+        <sprite>sprites\spr_arrow</sprite>
       </sprites>
       <sprite>sprites\spr_pinkplatform</sprite>
     </sprites>
     <sprites name="In editor">
       <sprite>sprites\spr_eraser</sprite>
+      <sprite>sprites\spr_arrow_entity</sprite>
+    </sprites>
+    <sprites name="Effects">
+      <sprite>sprites\spr_ring</sprite>
     </sprites>
   </sprites>
   <backgrounds name="background">
@@ -127,9 +146,18 @@
         <object>objects\obj_inv_block</object>
         <object>objects\obj_question_block</object>
         <object>objects\obj_spiketrap</object>
+        <object>objects\obj_cloud</object>
       </objects>
       <objects name="Green">
         <object>objects\obj_coin</object>
+      </objects>
+      <objects name="Yellow">
+        <object>objects\obj_onoff_switch</object>
+        <objects name="On off blocks">
+          <object>objects\obj_onoff_block_red</object>
+          <object>objects\obj_onoff_block_blue</object>
+        </objects>
+        <object>objects\obj_arrow</object>
       </objects>
     </objects>
     <objects name="In editor">
@@ -139,6 +167,9 @@
       <object>objects\obj_mario_shadow</object>
       <object>objects\obj_entity_dead</object>
       <object>objects\obj_reset_rocket</object>
+    </objects>
+    <objects name="Effects">
+      <object>objects\obj_ring_effect</object>
     </objects>
   </objects>
   <rooms name="rooms">

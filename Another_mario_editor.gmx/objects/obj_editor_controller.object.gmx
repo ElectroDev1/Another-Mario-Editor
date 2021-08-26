@@ -221,9 +221,18 @@ instance_destroy(obj_mario_shadow);
         //Create the entities
     with(obj_editor_entity){
          
+        if(!UsesSprite){
          child=instance_create(x+1+sprite_get_xoffset(global.spritemap[? Entity_id]),
          y+1+sprite_get_yoffset(global.spritemap[? Entity_id]),
          global.entitymap[? Entity_id]);
+        }
+        else{
+        
+         child=instance_create(x,
+         y,
+         global.entitymap[? Entity_id]);
+        
+        }
          
          switch(child.object_index){
          
@@ -232,15 +241,20 @@ instance_destroy(obj_mario_shadow);
                 case obj_inv_block :
                       child.image_speed=0.2;    
                 break;
+                
+                case obj_arrow :
+                      child.image_angle=Attribute[Attributes.Direction];
+                break;
          
          }
          
          if(tile_exists(tile)){ tile_set_visible(tile,false); }
+         visible=false;
     
     }
     
     with(obj_mario_editor){
-        instance_create(x+1,y,obj_playerparent);
+        instance_create(x,y,obj_playerparent);
         obj_camera.x=x;
        obj_camera.y=y;
        
@@ -279,6 +293,7 @@ if(room!=rm_editor){exit;}
 //Update menu positions
 
     MenuOffset[0]=scr_approach(MenuOffset[0],MenuClose[0],0.1);
+    MenuOffset[1]=scr_approach(MenuOffset[1],MenuClose[1],0.1);
 
 
 EntitySelected=position_meeting(mouse_x,mouse_y,obj_editor_entity);
@@ -296,15 +311,51 @@ if(state==ControlState.normal){
 
     //Place
     if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
-    view_xview[0]+X-10,view_yview[0]+20-12,
-    view_xview[0]+X+11,view_yview[0]+20+12)){
+    view_xview[0]+X-10,view_yview[0]+20-12-Topmenu_height*MenuOffset[0],
+    view_xview[0]+X+11,view_yview[0]+20+12-Topmenu_height*MenuOffset[0])){
     
        if(mouse_check_button_pressed(mb_left)){enitityplace=1; selected_id=a;}
     
     }    
-
  }
  
+ //Select an onject
+ if(EntitySelected){
+ 
+    if(mouse_check_button_pressed(mb_right)){
+       
+       //Get out of the placing state
+       enitityplace=0; selected_id=-1;
+       
+       
+       //Get the entity id
+       var entity = instance_nearest(mouse_x,mouse_y,obj_editor_entity);
+       /*
+       if(entity.UsesSprite){
+          var xoff = sprite_get_xoffset(entity.UsesSprite);
+          var yoff = sprite_get_yoffset(entity.UsesSprite);
+          instance_create(entity.x+xoff,entity.y+yoff,obj_ring_effect);
+       }else{
+          instance_create(entity.x-32,entity.y-32,obj_ring_effect);
+       }*/
+       
+       
+       
+       
+       //Interact with the entity
+       with(entity){
+       
+            switch(Entity_id){
+                   case "Arrow": with(other){event_user(2);} Attribute[Attributes.Direction]+=45; break;
+            }
+       
+       }
+       
+       
+       
+    }
+ 
+ }
  
  
 }else{//Eraser
@@ -337,7 +388,7 @@ if(state==ControlState.normal){
          instance_destroy(); 
         
         }
-        event_user(2);
+        Placing=1;
      
      }
      
@@ -359,7 +410,7 @@ if(state==ControlState.normal){
 //Buttons-------------
  
 //Rubber
-if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2],view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
+if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2]+Rightmenu_width*MenuOffset[1],view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
   
    if(mouse_check_button_pressed(mb_left)){state=!state global.cursor_angle=0;}
 
@@ -368,9 +419,9 @@ if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+But
 //Undo
 if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
 
-   view_xview+view_wview+ButtonRight_X[4]-sprite_get_xoffset(ButtonRight_Sprite[4]),
+   view_xview+view_wview+Rightmenu_width*MenuOffset[1]+ButtonRight_X[4]-sprite_get_xoffset(ButtonRight_Sprite[4]),
    view_yview+ButtonRight_Y[4]+Rightmenu_top-sprite_get_yoffset(ButtonRight_Sprite[4]),
-   view_xview+view_wview+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]),
+   view_xview+view_wview+Rightmenu_width*MenuOffset[1]+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]),
    view_yview+ButtonRight_Y[4]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[4])
    
    )){
@@ -388,9 +439,9 @@ if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
 //Redo
 if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
 
-   view_xview+view_wview+ButtonRight_X[3]-sprite_get_xoffset(ButtonRight_Sprite[3]),
+   view_xview+view_wview+Rightmenu_width*MenuOffset[1]+ButtonRight_X[3]-sprite_get_xoffset(ButtonRight_Sprite[3]),
    view_yview+ButtonRight_Y[3]+Rightmenu_top-sprite_get_yoffset(ButtonRight_Sprite[3]),
-   view_xview+view_wview+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]),
+   view_xview+view_wview+Rightmenu_width*MenuOffset[1]+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]),
    view_yview+ButtonRight_Y[3]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[3])
    
    )){
@@ -409,9 +460,9 @@ if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
 //Delete
 if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
 
-   view_xview+view_wview+ButtonRight_X[5]-sprite_get_xoffset(ButtonRight_Sprite[5]),
+   view_xview+view_wview+Rightmenu_width*MenuOffset[1]+ButtonRight_X[5]-sprite_get_xoffset(ButtonRight_Sprite[5]),
    view_yview+ButtonRight_Y[5]+Rightmenu_top-sprite_get_yoffset(ButtonRight_Sprite[5]),
-   view_xview+view_wview+ButtonRight_X[5]+sprite_get_xoffset(ButtonRight_Sprite[5]),
+   view_xview+view_wview+Rightmenu_width*MenuOffset[1]+ButtonRight_X[5]+sprite_get_xoffset(ButtonRight_Sprite[5]),
    view_yview+ButtonRight_Y[5]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[5])
    
    )){
@@ -451,7 +502,7 @@ ButtonRight_Y[5]=196-Rightmenu_top+random_range(-delet_shake,delet_shake);
 //Released event
 if(mouse_check_button_released(mb_left)){ 
    
-   if(Placing){ event_user(2); }
+   if(Placing){  event_user(2); }
 
 
    Placing=0;
@@ -501,7 +552,10 @@ view_yview=min(view_yview,room_height-view_hview-8);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_create(view_xview+view_wview/2,view_yview+view_hview+70,obj_reset_rocket);
+            <string>
+event_user(2);
+
+instance_create(view_xview+view_wview/2,view_yview+view_hview+70,obj_reset_rocket);
 
 with(obj_mario_editor){ x = xstart; y = ystart; }
 </string>
@@ -571,6 +625,9 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
                  }
             
             }
+            
+            UsesSprite = real(ds_grid_get(levelmap,array_length_1d(Attribute)+3,pos+1));
+            
              show_debug_message("Item created successfully at "
              +string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
 
@@ -613,6 +670,8 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
     //Clear the room
     with(obj_editor_entity){instance_destroy();}
    
+    show_debug_message("Saved temp of index "+string(temp_index));
+    
   if(file_exists("Temp\TempLevel_"+string(temp_index-1)+".sav")){
      
     //Get the ds grid
@@ -650,6 +709,10 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
                  for(var a=0; a&lt;array_length_1d(Attribute); a++){
                      Attribute[a] = real(ds_grid_get(levelmap,a+3,pos+1));
                  }
+                 
+                 Angle=Attribute[Attributes.Direction];
+                 
+                 UsesSprite = real(ds_grid_get(levelmap,array_length_1d(Attribute)+3,pos+1));
             
             }
              show_debug_message("Item created successfully at "
@@ -716,6 +779,8 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
                    ds_grid_add(levelmap, a+3, pos+1, string(Attribute[a]));
                }
                
+               ds_grid_add(levelmap, array_length_1d(Attribute)+3, pos+1,UsesSprite);
+               
                pos++;
           
           }
@@ -740,6 +805,7 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
           
           }
           
+          show_debug_message("Saved temp of index "+string(temp_index));
    
 </string>
           </argument>
@@ -812,6 +878,10 @@ temp_index=-1;
                  for(var a=0; a&lt;array_length_1d(Attribute); a++){
                      Attribute[a] = real(ds_grid_get(levelmap,a+3,pos+1));
                  }
+                 
+                 Angle=Attribute[Attributes.Direction];
+                 
+                 UsesSprite = real(ds_grid_get(levelmap,array_length_1d(Attribute)+3,pos+1));
             
             }
              show_debug_message("Item created successfully at "
@@ -822,6 +892,8 @@ temp_index=-1;
         if(pos==items){
          ds_grid_destroy(levelmap);
         }
+        
+event_user(2);
 </string>
           </argument>
         </arguments>
@@ -867,7 +939,7 @@ if(room==rm_editor){
           var items = instance_number(obj_editor_entity);
    
           //Create the grid
-          var levelmap = ds_grid_create(11,items+1);
+          var levelmap = ds_grid_create(13,items+1);
    
           ds_grid_add(levelmap,0,0,string(items));
           ds_grid_add(levelmap,1,0,string(World));
@@ -890,6 +962,8 @@ if(room==rm_editor){
                for(var a=0; a&lt;array_length_1d(Attribute); a++){
                    ds_grid_add(levelmap, a+3, pos+1, string(Attribute[a]));
                }
+               
+               ds_grid_add(levelmap, array_length_1d(Attribute)+3, pos+1,UsesSprite);
                
                pos++;
           
@@ -991,6 +1065,28 @@ if !view_enabled {
         </arguments>
       </action>
     </event>
+    <event eventtype="8" enumb="72">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string></string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -1038,36 +1134,38 @@ draw_primitive_end();
 
 
 draw_primitive_begin(pr_trianglefan);
-draw_vertex_colour(0,Topmenu_height,c_black,0.25);
-draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height,c_black,0.25);
+draw_vertex_colour(0,Topmenu_height-Topmenu_height*MenuOffset[0],c_black,0.25);
+draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height-Topmenu_height*MenuOffset[0],c_black,0.25);
 
-draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height+5,c_black,0);
-draw_vertex_colour(0,Topmenu_height+5,c_black,0);
+draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height-Topmenu_height*MenuOffset[0]+5,c_black,0);
+draw_vertex_colour(0,Topmenu_height-Topmenu_height*MenuOffset[0]+5,c_black,0);
 draw_primitive_end();
 
 
 //
 draw_set_colour(c_white);
 draw_set_alpha(0.4);
-draw_rectangle(0,0,display_get_gui_width(),Topmenu_height*!MenuOffset[0],0);
+draw_rectangle(0,0,display_get_gui_width(),Topmenu_height-Topmenu_height*MenuOffset[0],0);
 
 draw_set_alpha(1);
 
 var halfX=display_get_gui_width()/2;
 
-draw_rectangle(halfX-6,Topmenu_height*!MenuOffset[0],halfX+6,Topmenu_height*!MenuOffset[0]+4,0);
+draw_rectangle(halfX-6,
+Topmenu_height-Topmenu_height*MenuOffset[0],halfX+6,Topmenu_height-Topmenu_height*MenuOffset[0]+4,0);
 
-draw_sprite(spr_coin,0,60+20*MenuOffset[0],80);
 
 if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
-halfX-6,Topmenu_height*!MenuOffset[0],halfX+6,Topmenu_height*!MenuOffset[0]+4)){
+halfX-6,Topmenu_height-Topmenu_height*MenuOffset[0],
+halfX+6,Topmenu_height-Topmenu_height*MenuOffset[0]+4)){
 
-   if(mouse_check_button_pressed(mb_left)){ MenuClose[0]=!MenuClose[0]; }
+   if(mouse_check_button_pressed(mb_left)){ enitityplace=0; selected_id=-1; MenuClose[0]=!MenuClose[0]; }
 
 }
 
 
-draw_line_width(0,Topmenu_height,display_get_gui_width(),Topmenu_height,1);
+draw_line_width(0,Topmenu_height-Topmenu_height*MenuOffset[0],display_get_gui_width(),
+Topmenu_height-Topmenu_height*MenuOffset[0],1);
 
 
 
@@ -1081,21 +1179,21 @@ for(var a=0; a&lt;12; a++){
     var X=40+27*a;
     if(selected_id==a){ var Y=w; }else{ var Y=0; }
 
-    draw_sprite_ext(spr_objectUI,0,X,21,1,1,0,c_black,0.25);
+    draw_sprite_ext(spr_objectUI,0,X, 21-Topmenu_height*MenuOffset[0]  ,1,1,0,c_black,0.25);
     
     draw_sprite(spr_objectUI,
-    global.entityclass[? global.selected_entity[a]],X,20);
+    global.entityclass[? global.selected_entity[a]],X, 20-Topmenu_height*MenuOffset[0]);
     
-    draw_sprite(global.spritemap[? global.selected_entity[a]],0,X+1,21+Y);
+    draw_sprite(global.spritemap[? global.selected_entity[a]],0,X, (21+Y)-Topmenu_height*MenuOffset[0]);
     
 }
 
 draw_sprite_ext(spr_magnUI,0,
-display_get_gui_width()-17,21,1,1,0,c_black,0.25);
+display_get_gui_width()-17,21-Topmenu_height*MenuOffset[0],1,1,0,c_black,0.25);
 
 
 draw_sprite(spr_magnUI,0,
-display_get_gui_width()-17,20);
+display_get_gui_width()-17,20-Topmenu_height*MenuOffset[0]);
 
 
 
@@ -1103,23 +1201,42 @@ display_get_gui_width()-17,20);
 //Right side
 draw_set_colour(c_white);
 draw_set_alpha(0.4);
-draw_rectangle(display_get_gui_width()-Rightmenu_width,Rightmenu_top,display_get_gui_width(),display_get_gui_height(),0);
+draw_rectangle(display_get_gui_width()-Rightmenu_width +Rightmenu_width*MenuOffset[1],
+Rightmenu_top,display_get_gui_width()+Rightmenu_width*MenuOffset[1],display_get_gui_height(),0);
 
-draw_set_alpha(1);
+
 
 var halfY=Rightmenu_top + (display_get_gui_height()-Rightmenu_top)/2;
 
-draw_rectangle(display_get_gui_width()-Rightmenu_width-4,halfY-6,display_get_gui_width()-Rightmenu_width,halfY+6,0);
+if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
+display_get_gui_width()-Rightmenu_width-6+Rightmenu_width*MenuOffset[1],halfY-6,
+display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1],halfY+6)){
+
+   if(mouse_check_button_pressed(mb_left)){ enitityplace=0; selected_id=-1; MenuClose[1]=!MenuClose[1]; }
+
+}
 
 
-draw_line(display_get_gui_width()-Rightmenu_width,Rightmenu_top-1,display_get_gui_width()-Rightmenu_width,display_get_gui_height());
-draw_line(display_get_gui_width()-Rightmenu_width,Rightmenu_top-1,display_get_gui_width(),Rightmenu_top-1);
+
+draw_set_alpha(1);
+
+
+draw_rectangle(
+display_get_gui_width()-Rightmenu_width-4+Rightmenu_width*MenuOffset[1],halfY-6,
+display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1],halfY+6,0);
+
+
+draw_line(display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1],
+Rightmenu_top-1,display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1],display_get_gui_height());
+
+draw_line(display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1]
+,Rightmenu_top-1,display_get_gui_width()+Rightmenu_width*MenuOffset[1],Rightmenu_top-1);
 
 //Draw the right buttons
 for(var a=0; a&lt;array_length_1d(ButtonRight_Sprite); a++){
 
-    draw_sprite_ext(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a],ButtonRight_Y[a]+1+Rightmenu_top,1,1,0,c_black,0.25);
-    draw_sprite(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a],ButtonRight_Y[a]+Rightmenu_top);
+    draw_sprite_ext(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a]+Rightmenu_width*MenuOffset[1],ButtonRight_Y[a]+1+Rightmenu_top,1,1,0,c_black,0.25);
+    draw_sprite(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a]+Rightmenu_width*MenuOffset[1],ButtonRight_Y[a]+Rightmenu_top);
 
 }
 
@@ -1128,17 +1245,17 @@ for(var a=0; a&lt;array_length_1d(ButtonRight_Sprite); a++){
 draw_set_colour(c_black);
 
 //Redo circle
-draw_pie(display_get_gui_width()+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]),
+draw_pie(display_get_gui_width()+Rightmenu_width*MenuOffset[1]+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]),
 ButtonRight_Y[3]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[3]),1,1,c_black,4,1);
 draw_set_colour(c_white);
-draw_pie(display_get_gui_width()+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]) ,
+draw_pie(display_get_gui_width()+Rightmenu_width*MenuOffset[1]+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]) ,
 ButtonRight_Y[3]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[3]),max(redo_time,0), 1, c_red, 3, 1);
 
 //Undo circle
-draw_pie(display_get_gui_width()+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]),
+draw_pie(display_get_gui_width()+Rightmenu_width*MenuOffset[1]+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]),
 ButtonRight_Y[4]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[4]),1,1,c_black,4,1);
 draw_set_colour(c_white);
-draw_pie(display_get_gui_width()+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]) ,
+draw_pie(display_get_gui_width()+Rightmenu_width*MenuOffset[1]+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]) ,
 ButtonRight_Y[4]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[4]),max(undo_time ,0), 1, c_red, 3, 1);
 
 
@@ -1201,6 +1318,8 @@ draw_set_colour(c_white);
           <argument>
             <kind>1</kind>
             <string>if(room!=rm_editor){exit;}
+
+
 
 depth=6;
 //draw_background_tiled(background0,0,room_height-background_get_height(background0));
@@ -1276,16 +1395,33 @@ if(state==ControlState.normal){
            device_mouse_x(0),device_mouse_y(0),1,1,0,c_white,1);
            
            break;
+           
+           case "Arrow" :
+           
+           draw_sprite_ext(
+           spr_arrow,0,
+           device_mouse_x(0),device_mouse_y(0),1,1,0,c_white,1);
+           
+           break;
    
    }
    
    
-   if(mouse_check_button(mb_left))&amp;&amp;(device_mouse_y(0)&gt;view_yview+tabheight)&amp;&amp;
-   (device_mouse_x(0)&lt;view_xview+view_wview-tabwidth)&amp;&amp;(!instance_exists(obj_reset_rocket)){
+   if(mouse_check_button(mb_left))&amp;&amp;(device_mouse_y(0)&gt;view_yview+Topmenu_height+4-Topmenu_height*MenuOffset[0])&amp;&amp;
+   (device_mouse_x(0)&lt;view_xview+view_wview-Rightmenu_width-6+Rightmenu_width*MenuOffset[1])&amp;&amp;(!instance_exists(obj_reset_rocket)){
    
       with(instance_create(device_mouse_x(0)-8,device_mouse_y(0)-8,obj_editor_entity)){
       
            Entity_id=global.selected_entity[other.selected_id];
+      
+           //Special properties
+           switch(global.selected_entity[other.selected_id]){
+                                    
+                  case "Arrow": UsesSprite=spr_arrow; x++; y++;  break;
+                  
+           }
+      
+           
            move_snap(16,16)
            other.Placing=1;//alarm[1]=1;
       
@@ -1379,7 +1515,7 @@ if(state==ControlState.normal){
 
 if(room==rm_editor){
         
-    
+    global.switchstate=0;
     room_set_width(rm_ingame, room_width);
     room_set_height(rm_ingame,room_height);
 
@@ -1403,6 +1539,7 @@ else if(room==rm_ingame){
     }
     
     with(obj_editor_entity){
+       visible=true;
        if(tile_exists(tile)){ tile_set_visible(tile,true); }
     }
 

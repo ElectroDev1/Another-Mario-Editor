@@ -84,7 +84,7 @@ if(Vsp&gt;=0){
 
     if(Semi){
     
-        if(y&lt;Semi.y+8){
+        if(bbox_bottom&lt;Semi.y+2){
            
            y=Semi.bbox_top-(sprite_get_height(mask_index)-(sprite_yoffset*image_yscale))
            Vsp=0;

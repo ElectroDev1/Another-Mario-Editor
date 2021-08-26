@@ -77,6 +77,8 @@ enum Attributes {
      Width = 4,
      Height = 5
 }
+
+global.switchstate=0;
 </string>
           </argument>
         </arguments>
@@ -110,6 +112,11 @@ ds_map_add(global.entitymap,"FlipBlock",obj_flipblock);
 ds_map_add(global.entitymap,"QuestBlock",obj_question_block);
 ds_map_add(global.entitymap,"InvBlock",obj_inv_block);
 ds_map_add(global.entitymap,"Spiketrap",obj_spiketrap);
+ds_map_add(global.entitymap,"OnOff_switch",obj_onoff_switch);
+ds_map_add(global.entitymap,"OnOff_block_ON",obj_onoff_block_red);
+ds_map_add(global.entitymap,"OnOff_block_OFF",obj_onoff_block_blue);
+ds_map_add(global.entitymap,"Cloud",obj_cloud);
+ds_map_add(global.entitymap,"Arrow",obj_arrow);
 
 //Set tile positions
 global.tileposX=ds_map_create();
@@ -120,16 +127,24 @@ ds_map_add(global.tileposX,"FlipBlock",35);
 ds_map_add(global.tileposX,"QuestBlock",52);
 ds_map_add(global.tileposX,"InvBlock",69);
 ds_map_add(global.tileposX,"Spiketrap",86);
+ds_map_add(global.tileposX,"OnOff_switch",103);
+ds_map_add(global.tileposX,"OnOff_block_ON",137);
+ds_map_add(global.tileposX,"OnOff_block_OFF",188);
+ds_map_add(global.tileposX,"Cloud",205);
 
 
 global.tileposY=ds_map_create();
 
-ds_map_add(global.tileposY,"Coin",18);
-ds_map_add(global.tileposY,"MetalBlock",18);
-ds_map_add(global.tileposY,"FlipBlock",18);
-ds_map_add(global.tileposY,"QuestBlock",18);
-ds_map_add(global.tileposY,"InvBlock",18);
-ds_map_add(global.tileposY,"Spiketrap",18);
+ds_map_add(global.tileposY,"Coin",1);
+ds_map_add(global.tileposY,"MetalBlock",1);
+ds_map_add(global.tileposY,"FlipBlock",1);
+ds_map_add(global.tileposY,"QuestBlock",1);
+ds_map_add(global.tileposY,"InvBlock",1);
+ds_map_add(global.tileposY,"Spiketrap",1);
+ds_map_add(global.tileposY,"OnOff_switch",1);
+ds_map_add(global.tileposY,"OnOff_block_ON",1);
+ds_map_add(global.tileposY,"OnOff_block_OFF",1);
+ds_map_add(global.tileposY,"Cloud",1);
 
 //Set sprites
 /*
@@ -145,6 +160,11 @@ ds_map_add(global.spritemap,"FlipBlock",spr_flipblock);
 ds_map_add(global.spritemap,"QuestBlock",spr_question_block);
 ds_map_add(global.spritemap,"InvBlock",spr_invisible_block);
 ds_map_add(global.spritemap,"Spiketrap",spr_spiketrap);
+ds_map_add(global.spritemap,"OnOff_switch",spr_onoff_switch_on);
+ds_map_add(global.spritemap,"OnOff_block_ON",spr_onoff_block_red);
+ds_map_add(global.spritemap,"OnOff_block_OFF",spr_onoff_block_blue);
+ds_map_add(global.spritemap,"Cloud",spr_cloud);
+ds_map_add(global.spritemap,"Arrow",spr_arrow_icon);
 
 //Object type
 global.entityclass=ds_map_create();
@@ -157,14 +177,19 @@ ds_map_add(global.entityclass,"FlipBlock",0);
 ds_map_add(global.entityclass,"QuestBlock",0);
 ds_map_add(global.entityclass,"InvBlock",0);
 ds_map_add(global.entityclass,"Spiketrap",0);
+ds_map_add(global.entityclass,"OnOff_switch",3);
+ds_map_add(global.entityclass,"OnOff_block_ON",3);
+ds_map_add(global.entityclass,"OnOff_block_OFF",3);
+ds_map_add(global.entityclass,"Cloud",0);
+ds_map_add(global.entityclass,"Arrow",3);
 
 
 for(var a=0; a&lt;12; a++){ global.selected_entity[a]="Coin"; }
-global.selected_entity[0]="MetalBlock";
-global.selected_entity[1]="FlipBlock";
-global.selected_entity[2]="QuestBlock";
-global.selected_entity[3]="InvBlock";
-global.selected_entity[4]="Spiketrap";
+global.selected_entity[0]="MetalBlock";global.selected_entity[1]="FlipBlock";
+global.selected_entity[2]="QuestBlock";global.selected_entity[3]="InvBlock";
+global.selected_entity[4]="Spiketrap";global.selected_entity[4]="OnOff_switch";
+global.selected_entity[5]="OnOff_block_ON";global.selected_entity[6]="OnOff_block_OFF";
+global.selected_entity[7]="Cloud";global.selected_entity[8]="Arrow";
 </string>
           </argument>
         </arguments>
