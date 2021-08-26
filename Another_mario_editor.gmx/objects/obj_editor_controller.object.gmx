@@ -57,8 +57,12 @@ infostring="";
 infoalpha=0;
 
 temp_index=-1;
+
 undo_time=-1;
 redo_time=-1;
+delet_time=-1;
+delet_pos=0;
+delet_shake=0;
 </string>
           </argument>
         </arguments>
@@ -133,29 +137,40 @@ redo_time=-1;
             <kind>1</kind>
             <string>///Button positions
 
+Topmenu_height=36;
+
+Rightmenu_top=37;
+Rightmenu_width=33;
+
 ButtonRight_Sprite[0]=spr_menu_UI;
 ButtonRight_X[0]=-16;
-ButtonRight_Y[0]=50;
+ButtonRight_Y[0]=50-Rightmenu_top;
+ButtonClose[0]=0;
 
 ButtonRight_Sprite[1]=spr_robotUI;
 ButtonRight_X[1]=-16;
-ButtonRight_Y[1]=78;
+ButtonRight_Y[1]=78-Rightmenu_top;
 
 ButtonRight_Sprite[2]=spr_rubberUI;
 ButtonRight_X[2]=-16;
-ButtonRight_Y[2]=115;
+ButtonRight_Y[2]=115-Rightmenu_top;
 
 ButtonRight_Sprite[3]=spr_redocat_UI;
 ButtonRight_X[3]=-16;
-ButtonRight_Y[3]=145;
+ButtonRight_Y[3]=145-Rightmenu_top;
 
 ButtonRight_Sprite[4]=spr_undodog_UI;
 ButtonRight_X[4]=-16;
-ButtonRight_Y[4]=168;
+ButtonRight_Y[4]=168-Rightmenu_top;
 
 ButtonRight_Sprite[5]=spr_rocket_UI;
 ButtonRight_X[5]=-16;
-ButtonRight_Y[5]=196;
+ButtonRight_Y[5]=196-Rightmenu_top;
+
+Menus=2;
+MenuClose[Menus-1]=0;
+MenuOffset[Menus-1]=0;
+
 </string>
           </argument>
         </arguments>
@@ -225,7 +240,7 @@ instance_destroy(obj_mario_shadow);
     }
     
     with(obj_mario_editor){
-        instance_create(x,y,obj_playerparent);
+        instance_create(x+1,y,obj_playerparent);
         obj_camera.x=x;
        obj_camera.y=y;
        
@@ -258,7 +273,13 @@ instance_destroy(obj_mario_shadow);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if(room!=rm_editor){exit;}
+            <string>///Editor logic
+if(room!=rm_editor){exit;}
+
+//Update menu positions
+
+    MenuOffset[0]=scr_approach(MenuOffset[0],MenuClose[0],0.1);
+
 
 EntitySelected=position_meeting(mouse_x,mouse_y,obj_editor_entity);
 
@@ -268,6 +289,7 @@ wt++;
 //Get the entity id
 if(state==ControlState.normal){
 
+ //Select object from menu
  for(var a=0; a&lt;12; a++){
 
     var X=40+27*a;
@@ -279,14 +301,13 @@ if(state==ControlState.normal){
     
        if(mouse_check_button_pressed(mb_left)){enitityplace=1; selected_id=a;}
     
-    }
-    
-    
-    
+    }    
 
  }
  
-}else{
+ 
+ 
+}else{//Eraser
 
   if(mouse_check_button(mb_left)){
   
@@ -335,9 +356,10 @@ if(state==ControlState.normal){
 
 }
  
+//Buttons-------------
  
 //Rubber
-if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2],view_yview+ButtonRight_Y[2],10)){
+if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2],view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
   
    if(mouse_check_button_pressed(mb_left)){state=!state global.cursor_angle=0;}
 
@@ -347,44 +369,86 @@ if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+But
 if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
 
    view_xview+view_wview+ButtonRight_X[4]-sprite_get_xoffset(ButtonRight_Sprite[4]),
-   view_yview+ButtonRight_Y[4]-sprite_get_yoffset(ButtonRight_Sprite[4]),
+   view_yview+ButtonRight_Y[4]+Rightmenu_top-sprite_get_yoffset(ButtonRight_Sprite[4]),
    view_xview+view_wview+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]),
-   view_yview+ButtonRight_Y[4]+sprite_get_yoffset(ButtonRight_Sprite[4])
+   view_yview+ButtonRight_Y[4]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[4])
    
    )){
   
-   if(mouse_check_button_pressed(mb_left)){ undo_time=0; } 
+   if(mouse_check_button_pressed(mb_left)&amp;&amp;(!instance_exists(obj_reset_rocket))){ undo_time=0; } 
 
    if(mouse_check_button(mb_left) &amp;&amp; (undo_time&gt;=0)){
       if(undo_time&lt;1.05){undo_time+=0.025;}else{ event_user(3); undo_time=-1; }
    }
    
    
-}
+}else{ undo_time=-1; }
 
 
 //Redo
 if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
 
    view_xview+view_wview+ButtonRight_X[3]-sprite_get_xoffset(ButtonRight_Sprite[3]),
-   view_yview+ButtonRight_Y[3]-sprite_get_yoffset(ButtonRight_Sprite[3]),
+   view_yview+ButtonRight_Y[3]+Rightmenu_top-sprite_get_yoffset(ButtonRight_Sprite[3]),
    view_xview+view_wview+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]),
-   view_yview+ButtonRight_Y[3]+sprite_get_yoffset(ButtonRight_Sprite[3])
+   view_yview+ButtonRight_Y[3]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[3])
    
    )){
   
-   if(mouse_check_button_pressed(mb_left)){ redo_time=0; } 
+   if(mouse_check_button_pressed(mb_left)&amp;&amp;(!instance_exists(obj_reset_rocket))){ redo_time=0; } 
 
-   if(mouse_check_button(mb_left) &amp;&amp; (redo_time&gt;=0)){
+  if(mouse_check_button(mb_left) &amp;&amp; (redo_time&gt;=0)){
       if(redo_time&lt;1.05){redo_time+=0.025;}else{ event_user(4); redo_time=-1; }
    }
    
    
-}
+}else{ redo_time=-1; }
+
+
+
+//Delete
+if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
+
+   view_xview+view_wview+ButtonRight_X[5]-sprite_get_xoffset(ButtonRight_Sprite[5]),
+   view_yview+ButtonRight_Y[5]+Rightmenu_top-sprite_get_yoffset(ButtonRight_Sprite[5]),
+   view_xview+view_wview+ButtonRight_X[5]+sprite_get_xoffset(ButtonRight_Sprite[5]),
+   view_yview+ButtonRight_Y[5]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[5])
+   
+   )){
+  
+   if(mouse_check_button_pressed(mb_left)&amp;&amp;(!instance_exists(obj_reset_rocket))){ delet_time=0; } 
+
+   
+   
+   if(mouse_check_button(mb_left) &amp;&amp; (delet_time&gt;=0)){
+   
+      delet_shake=1;
+   
+      if(delet_time&lt;1.05){delet_time+=0.025;}else{ 
+         
+          if(delet_pos&lt;2){
+             delet_pos++; delet_time=0;
+          }else{
+            event_user(5); delet_pos=0; delet_time=-1; 
+          }
+          
+      }
+   }
+   else{ delet_shake=scr_approach(delet_shake,0,0.2); delet_pos=0; delet_time=-1;  }
+   
+   //if(mouse_check_button_released(mb_left)){ surface_free(gui_surf); }
+   
+   
+   
+}else{ delet_shake=scr_approach(delet_shake,0,0.2); delet_time=-1; delet_pos=0; }
+
+ButtonRight_X[5]=-16+random_range(-delet_shake,delet_shake);
+ButtonRight_Y[5]=196-Rightmenu_top+random_range(-delet_shake,delet_shake);
 
 
 
 
+//Released event
 if(mouse_check_button_released(mb_left)){ 
    
    if(Placing){ event_user(2); }
@@ -415,6 +479,31 @@ view_yview[view_current]-=8; view_yview[view_current]=room_height-view_hview[vie
 
 view_yview=min(view_yview,room_height-view_hview-8);
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="15">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>instance_create(view_xview+view_wview/2,view_yview+view_hview+70,obj_reset_rocket);
+
+with(obj_mario_editor){ x = xstart; y = ystart; }
 </string>
           </argument>
         </arguments>
@@ -676,6 +765,7 @@ view_yview=min(view_yview,room_height-view_hview-8);
             <kind>1</kind>
             <string>///Load levels
 directory_destroy("Temp");
+temp_index=-1;
 
     //Data structure method
     infostring="Loaded level";
@@ -930,41 +1020,54 @@ if(!surface_exists(gui_surf)){
 //Draw the HUD
 surface_set_target(gui_surf);
 
+draw_clear_alpha(c_blue,0);
 
 //Shadows
 
-var tabwidth=33;
-var tabheight=39;
+
 
 draw_primitive_begin(pr_trianglefan);
-draw_vertex_colour(display_get_gui_width()-tabwidth-5,tabheight,c_black,0);
-draw_vertex_colour(display_get_gui_width()-tabwidth,tabheight,c_black,.25);
-draw_vertex_colour(display_get_gui_width()-tabwidth,display_get_gui_height(),c_black,.25);
-draw_vertex_colour(display_get_gui_width()-tabwidth-5,display_get_gui_height(),c_black,0);
+draw_vertex_colour(display_get_gui_width()-Rightmenu_width-5,Rightmenu_top,c_black,0);
+draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Rightmenu_top,c_black,.25);
+draw_vertex_colour(display_get_gui_width()-Rightmenu_width,display_get_gui_height(),c_black,.25);
+draw_vertex_colour(display_get_gui_width()-Rightmenu_width-5,display_get_gui_height(),c_black,0);
 
 draw_primitive_end();
 
 
 
-var tabheight=36;
 
 draw_primitive_begin(pr_trianglefan);
-draw_vertex_colour(0,tabheight,c_black,0.25);
-draw_vertex_colour(display_get_gui_width()-tabwidth,tabheight,c_black,0.25);
+draw_vertex_colour(0,Topmenu_height,c_black,0.25);
+draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height,c_black,0.25);
 
-draw_vertex_colour(display_get_gui_width()-tabwidth,tabheight+5,c_black,0);
-draw_vertex_colour(0,tabheight+5,c_black,0);
+draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height+5,c_black,0);
+draw_vertex_colour(0,Topmenu_height+5,c_black,0);
 draw_primitive_end();
 
 
-
+//
 draw_set_colour(c_white);
 draw_set_alpha(0.4);
-draw_rectangle(0,0,display_get_gui_width(),tabheight,0);
-
+draw_rectangle(0,0,display_get_gui_width(),Topmenu_height*!MenuOffset[0],0);
 
 draw_set_alpha(1);
-draw_line_width(0,tabheight,display_get_gui_width(),tabheight,1);
+
+var halfX=display_get_gui_width()/2;
+
+draw_rectangle(halfX-6,Topmenu_height*!MenuOffset[0],halfX+6,Topmenu_height*!MenuOffset[0]+4,0);
+
+draw_sprite(spr_coin,0,60+20*MenuOffset[0],80);
+
+if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
+halfX-6,Topmenu_height*!MenuOffset[0],halfX+6,Topmenu_height*!MenuOffset[0]+4)){
+
+   if(mouse_check_button_pressed(mb_left)){ MenuClose[0]=!MenuClose[0]; }
+
+}
+
+
+draw_line_width(0,Topmenu_height,display_get_gui_width(),Topmenu_height,1);
 
 
 
@@ -1000,15 +1103,23 @@ display_get_gui_width()-17,20);
 //Right side
 draw_set_colour(c_white);
 draw_set_alpha(0.4);
-draw_rectangle(display_get_gui_width()-tabwidth,tabheight+3,display_get_gui_width(),display_get_gui_height(),0);
+draw_rectangle(display_get_gui_width()-Rightmenu_width,Rightmenu_top,display_get_gui_width(),display_get_gui_height(),0);
 
 draw_set_alpha(1);
+
+var halfY=Rightmenu_top + (display_get_gui_height()-Rightmenu_top)/2;
+
+draw_rectangle(display_get_gui_width()-Rightmenu_width-4,halfY-6,display_get_gui_width()-Rightmenu_width,halfY+6,0);
+
+
+draw_line(display_get_gui_width()-Rightmenu_width,Rightmenu_top-1,display_get_gui_width()-Rightmenu_width,display_get_gui_height());
+draw_line(display_get_gui_width()-Rightmenu_width,Rightmenu_top-1,display_get_gui_width(),Rightmenu_top-1);
 
 //Draw the right buttons
 for(var a=0; a&lt;array_length_1d(ButtonRight_Sprite); a++){
 
-    draw_sprite_ext(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a],ButtonRight_Y[a]+1,1,1,0,c_black,0.25);
-    draw_sprite(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a],ButtonRight_Y[a]);
+    draw_sprite_ext(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a],ButtonRight_Y[a]+1+Rightmenu_top,1,1,0,c_black,0.25);
+    draw_sprite(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a],ButtonRight_Y[a]+Rightmenu_top);
 
 }
 
@@ -1018,34 +1129,51 @@ draw_set_colour(c_black);
 
 //Redo circle
 draw_pie(display_get_gui_width()+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]),
-ButtonRight_Y[3]+sprite_get_yoffset(ButtonRight_Sprite[3]),1,1,c_black,4,1);
+ButtonRight_Y[3]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[3]),1,1,c_black,4,1);
 draw_set_colour(c_white);
 draw_pie(display_get_gui_width()+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]) ,
-ButtonRight_Y[3]+sprite_get_yoffset(ButtonRight_Sprite[3]),max(redo_time,0), 1, c_red, 3, 1);
+ButtonRight_Y[3]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[3]),max(redo_time,0), 1, c_red, 3, 1);
 
 //Undo circle
 draw_pie(display_get_gui_width()+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]),
-ButtonRight_Y[4]+sprite_get_yoffset(ButtonRight_Sprite[4]),1,1,c_black,4,1);
+ButtonRight_Y[4]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[4]),1,1,c_black,4,1);
 draw_set_colour(c_white);
 draw_pie(display_get_gui_width()+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]) ,
-ButtonRight_Y[4]+sprite_get_yoffset(ButtonRight_Sprite[4]),max(undo_time ,0), 1, c_red, 3, 1);
+ButtonRight_Y[4]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[4]),max(undo_time ,0), 1, c_red, 3, 1);
 
 
 
 surface_reset_target();
 
 
-draw_surface(gui_surf,0,0);
+if(surface_exists(gui_surf)){draw_surface(gui_surf,0,0);}
+
+
+//Reset rocket circle
+draw_set_font(fnt_hd); draw_set_alpha(0.75);
+draw_set_halign(fa_center); draw_set_valign(fa_middle);
+
+if(delet_time&gt;=0){
+
+ draw_pie(display_get_gui_width()/2,display_get_gui_height()/2+16,
+ delet_time,1,c_white,64,0.75);
+
+ draw_set_colour(c_black);
+ draw_text(display_get_gui_width()/2,display_get_gui_height()/2+16,string(3-delet_pos));
+ 
+}
+
+draw_set_font(fnt_mario); draw_set_valign(fa_top); draw_set_alpha(1);
 
 
 }
 
-draw_set_colour(c_black);
+draw_set_colour(c_black); draw_set_halign(fa_left);
 draw_text_transformed(5,80,"Press ENTER to play#Press Z to save#Press X to load",0.5,0.5,0);
 
 infoalpha=scr_approach(infoalpha,0,0.2);
 
-draw_text_transformed(5,display_get_gui_height()-20,temp_index,0.5,0.5,0);
+draw_text_transformed(5,display_get_gui_height()-20,MenuOffset[0],0.5,0.5,0);
 
 draw_set_colour(c_white);
 
@@ -1153,7 +1281,7 @@ if(state==ControlState.normal){
    
    
    if(mouse_check_button(mb_left))&amp;&amp;(device_mouse_y(0)&gt;view_yview+tabheight)&amp;&amp;
-   (device_mouse_x(0)&lt;view_xview+view_wview-tabwidth){
+   (device_mouse_x(0)&lt;view_xview+view_wview-tabwidth)&amp;&amp;(!instance_exists(obj_reset_rocket)){
    
       with(instance_create(device_mouse_x(0)-8,device_mouse_y(0)-8,obj_editor_entity)){
       

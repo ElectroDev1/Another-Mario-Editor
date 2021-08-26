@@ -60,6 +60,7 @@
       <sprite>sprites\spr_redocat_UI</sprite>
       <sprite>sprites\spr_menu_UI</sprite>
       <sprite>sprites\spr_rocket_UI</sprite>
+      <sprite>sprites\spr_reset_rocket</sprite>
     </sprites>
     <sprites name="In game">
       <sprites name="Blue">
@@ -96,6 +97,7 @@
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_mario</font>
+    <font>fonts\fnt_hd</font>
   </fonts>
   <objects name="objects">
     <object>objects\obj_controller</object>
@@ -135,6 +137,8 @@
       <object>objects\obj_editor_controller</object>
       <object>objects\obj_mario_editor</object>
       <object>objects\obj_mario_shadow</object>
+      <object>objects\obj_entity_dead</object>
+      <object>objects\obj_reset_rocket</object>
     </objects>
   </objects>
   <rooms name="rooms">
