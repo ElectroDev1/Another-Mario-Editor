@@ -45,6 +45,8 @@ VY=obj_controller.Window_H;
 
 EntitySelected=-4;
 
+Placing=0;
+
 //Level attributes
 World=0;
 Time=0;
@@ -54,8 +56,106 @@ ClearCond=0;
 infostring="";
 infoalpha=0;
 
-temp_index=0;
+temp_index=-1;
 undo_time=-1;
+redo_time=-1;
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Stock file
+//Get the ds grid
+
+   //Data structure method
+       /*   var items = 0;
+   
+          //Create the grid
+          var levelmap = ds_grid_create(11,items+1);
+   
+          ds_grid_add(levelmap,0,0,string(items));
+          ds_grid_add(levelmap,1,0,string(World));
+          ds_grid_add(levelmap,2,0,string(Time));
+          ds_grid_add(levelmap,3,0,string(Scroll));
+          ds_grid_add(levelmap,4,0,string(ClearCond));
+
+          
+          //Serialize the grid to buffer
+          var buffer = ds_grid_write(levelmap);
+   
+          //Store the buffer in a file
+          var file = file_text_open_write("Temp\_Default_DO_NOT_DELETE.sav");
+          
+              file_text_write_string(file, string(items));
+              
+              file_text_writeln(file);
+              
+              file_text_write_string(file, string(buffer));
+          
+          file_text_close(file);
+          
+          ds_grid_destroy(levelmap);
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Button positions
+
+ButtonRight_Sprite[0]=spr_menu_UI;
+ButtonRight_X[0]=-16;
+ButtonRight_Y[0]=50;
+
+ButtonRight_Sprite[1]=spr_robotUI;
+ButtonRight_X[1]=-16;
+ButtonRight_Y[1]=78;
+
+ButtonRight_Sprite[2]=spr_rubberUI;
+ButtonRight_X[2]=-16;
+ButtonRight_Y[2]=115;
+
+ButtonRight_Sprite[3]=spr_redocat_UI;
+ButtonRight_X[3]=-16;
+ButtonRight_Y[3]=145;
+
+ButtonRight_Sprite[4]=spr_undodog_UI;
+ButtonRight_X[4]=-16;
+ButtonRight_Y[4]=168;
+
+ButtonRight_Sprite[5]=spr_rocket_UI;
+ButtonRight_X[5]=-16;
+ButtonRight_Y[5]=196;
 </string>
           </argument>
         </arguments>
@@ -237,14 +337,21 @@ if(state==ControlState.normal){
  
  
 //Rubber
-if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview-16,view_yview+140,10)){
+if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2],view_yview+ButtonRight_Y[2],10)){
   
    if(mouse_check_button_pressed(mb_left)){state=!state global.cursor_angle=0;}
 
 }
 
 //Undo
-if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview-16,view_yview+168,10)){
+if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
+
+   view_xview+view_wview+ButtonRight_X[4]-sprite_get_xoffset(ButtonRight_Sprite[4]),
+   view_yview+ButtonRight_Y[4]-sprite_get_yoffset(ButtonRight_Sprite[4]),
+   view_xview+view_wview+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]),
+   view_yview+ButtonRight_Y[4]+sprite_get_yoffset(ButtonRight_Sprite[4])
+   
+   )){
   
    if(mouse_check_button_pressed(mb_left)){ undo_time=0; } 
 
@@ -253,10 +360,42 @@ if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview-16,
    }
    
    
-
 }
 
-if(mouse_check_button_released(mb_left)){ undo_time=-1; } 
+
+//Redo
+if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
+
+   view_xview+view_wview+ButtonRight_X[3]-sprite_get_xoffset(ButtonRight_Sprite[3]),
+   view_yview+ButtonRight_Y[3]-sprite_get_yoffset(ButtonRight_Sprite[3]),
+   view_xview+view_wview+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]),
+   view_yview+ButtonRight_Y[3]+sprite_get_yoffset(ButtonRight_Sprite[3])
+   
+   )){
+  
+   if(mouse_check_button_pressed(mb_left)){ redo_time=0; } 
+
+   if(mouse_check_button(mb_left) &amp;&amp; (redo_time&gt;=0)){
+      if(redo_time&lt;1.05){redo_time+=0.025;}else{ event_user(4); redo_time=-1; }
+   }
+   
+   
+}
+
+
+
+
+if(mouse_check_button_released(mb_left)){ 
+   
+   if(Placing){ event_user(2); }
+
+
+   Placing=0;
+   
+   undo_time=-1;
+   redo_time=-1;
+   
+} 
 
 //Up
 if(view_yview[view_current]&lt;64){view_yview[view_current]+=8; view_yview[view_current]=64;}
@@ -281,7 +420,7 @@ view_yview=min(view_yview,room_height-view_hview-8);
         </arguments>
       </action>
     </event>
-    <event eventtype="7" enumb="13">
+    <event eventtype="7" enumb="14">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -298,20 +437,16 @@ view_yview=min(view_yview,room_height-view_hview-8);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Load temp
-temp_index--;
-if(file_exists("Temp\TempLevel_"+string(temp_index)+".sav")){
+            <string>///Redo
+  if(file_exists("Temp\TempLevel_"+string(temp_index+1)+".sav")){
 
-
-
+     //Clear the room
+    with(obj_editor_entity){instance_destroy();}
    
 
-
-    //Clear the room
-    with(obj_editor_entity){instance_destroy();}
-    
+     
     //Get the ds grid
-    var file = file_text_open_read("Temp\TempLevel_"+string(temp_index)+".sav");
+    var file = file_text_open_read("Temp\TempLevel_"+string(temp_index+1)+".sav");
     
         var items = real(file_text_read_string(file));
         
@@ -355,9 +490,92 @@ if(file_exists("Temp\TempLevel_"+string(temp_index)+".sav")){
         if(pos==items){
          ds_grid_destroy(levelmap);
         }
-      
-        file_delete("Temp\TempLevel_"+string(temp_index)+".sav");
-}
+        
+        temp_index++;
+ 
+   }
+   
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="13">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Load temp
+
+//Load the current temp file
+
+    //Clear the room
+    with(obj_editor_entity){instance_destroy();}
+   
+  if(file_exists("Temp\TempLevel_"+string(temp_index-1)+".sav")){
+     
+    //Get the ds grid
+    var file = file_text_open_read("Temp\TempLevel_"+string(temp_index-1)+".sav");
+    
+        var items = real(file_text_read_string(file));
+        
+        file_text_readln(file);
+          
+        var buffer = (file_text_read_string(file));
+          
+    file_text_close(file);
+    
+    var levelmap = /*ds_grid_read_buffer(buffer);*/ds_grid_create(11,items+1);
+    //Convert the buffer into a ds grid
+    ds_grid_read(levelmap,buffer);
+    
+        //var items = ds_grid_get(levelmap,0,0);
+        World=real(ds_grid_get(levelmap,1,0));
+        Time=real(ds_grid_get(levelmap,2,0));
+        Scroll=real(ds_grid_get(levelmap,3,0));
+        ClearCond=real(ds_grid_get(levelmap,4,0));
+        
+
+        //Create the objects
+        for(var pos=0; pos&lt;items; pos++){
+        
+            with(instance_create(
+            real(ds_grid_get(levelmap,1,pos+1)),
+            real(ds_grid_get(levelmap,2,pos+1)),
+            obj_editor_entity)){
+            
+                 Entity_id = ds_grid_get(levelmap,0,pos+1);
+                 
+                 for(var a=0; a&lt;array_length_1d(Attribute); a++){
+                     Attribute[a] = real(ds_grid_get(levelmap,a+3,pos+1));
+                 }
+            
+            }
+             show_debug_message("Item created successfully at "
+             +string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
+
+        }
+        
+        if(pos==items){
+         ds_grid_destroy(levelmap);
+        }
+        
+  }
+        
+         if(temp_index&gt;-1){temp_index--;}
+        //file_delete("Temp\TempLevel_"+string(temp_index)+".sav");
 </string>
           </argument>
         </arguments>
@@ -382,7 +600,7 @@ if(file_exists("Temp\TempLevel_"+string(temp_index)+".sav")){
             <kind>1</kind>
             <string>///Save a temp file
 
-   
+   temp_index++; 
           //Data structure method
           var items = instance_number(obj_editor_entity);
    
@@ -433,7 +651,7 @@ if(file_exists("Temp\TempLevel_"+string(temp_index)+".sav")){
           
           }
           
-   temp_index++;
+   
 </string>
           </argument>
         </arguments>
@@ -786,26 +1004,31 @@ draw_rectangle(display_get_gui_width()-tabwidth,tabheight+3,display_get_gui_widt
 
 draw_set_alpha(1);
 
-draw_sprite_ext(spr_menu_UI,0,display_get_gui_width()-16,51,1,1,0,c_black,0.25);
-draw_sprite(spr_menu_UI,0,display_get_gui_width()-16,50);
+//Draw the right buttons
+for(var a=0; a&lt;array_length_1d(ButtonRight_Sprite); a++){
+
+    draw_sprite_ext(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a],ButtonRight_Y[a]+1,1,1,0,c_black,0.25);
+    draw_sprite(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a],ButtonRight_Y[a]);
+
+}
 
 
-draw_sprite_ext(spr_robotUI,0,display_get_gui_width()-16,79,1,1,0,c_black,0.25);
-draw_sprite(spr_robotUI,0,display_get_gui_width()-16,78);
-
-
-draw_sprite_ext(spr_rubberUI,0,display_get_gui_width()-16,141,1,1,0,c_black,0.25);
-draw_sprite(spr_rubberUI,0,display_get_gui_width()-16,140);
-
-
-draw_sprite_ext(spr_undodog_UI,0,display_get_gui_width()-16,169,1,1,0,c_black,0.25);
-draw_sprite(spr_undodog_UI,0,display_get_gui_width()-16,168);
 
 draw_set_colour(c_black);
 
-draw_pie(display_get_gui_width()-8,176,1,1,c_black,4,1);
+//Redo circle
+draw_pie(display_get_gui_width()+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]),
+ButtonRight_Y[3]+sprite_get_yoffset(ButtonRight_Sprite[3]),1,1,c_black,4,1);
 draw_set_colour(c_white);
-draw_pie(display_get_gui_width()-8,176 ,max(undo_time,0), 1, c_red, 3, 1);
+draw_pie(display_get_gui_width()+ButtonRight_X[3]+sprite_get_xoffset(ButtonRight_Sprite[3]) ,
+ButtonRight_Y[3]+sprite_get_yoffset(ButtonRight_Sprite[3]),max(redo_time,0), 1, c_red, 3, 1);
+
+//Undo circle
+draw_pie(display_get_gui_width()+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]),
+ButtonRight_Y[4]+sprite_get_yoffset(ButtonRight_Sprite[4]),1,1,c_black,4,1);
+draw_set_colour(c_white);
+draw_pie(display_get_gui_width()+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]) ,
+ButtonRight_Y[4]+sprite_get_yoffset(ButtonRight_Sprite[4]),max(undo_time ,0), 1, c_red, 3, 1);
 
 
 
@@ -936,7 +1159,7 @@ if(state==ControlState.normal){
       
            Entity_id=global.selected_entity[other.selected_id];
            move_snap(16,16)
-           alarm[1]=1;
+           other.Placing=1;//alarm[1]=1;
       
       }
       

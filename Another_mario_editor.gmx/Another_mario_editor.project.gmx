@@ -57,7 +57,9 @@
       <sprite>sprites\spr_robotUI</sprite>
       <sprite>sprites\spr_rubberUI</sprite>
       <sprite>sprites\spr_undodog_UI</sprite>
+      <sprite>sprites\spr_redocat_UI</sprite>
       <sprite>sprites\spr_menu_UI</sprite>
+      <sprite>sprites\spr_rocket_UI</sprite>
     </sprites>
     <sprites name="In game">
       <sprites name="Blue">
