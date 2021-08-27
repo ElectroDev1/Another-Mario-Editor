@@ -117,6 +117,8 @@ ds_map_add(global.entitymap,"OnOff_block_ON",obj_onoff_block_red);
 ds_map_add(global.entitymap,"OnOff_block_OFF",obj_onoff_block_blue);
 ds_map_add(global.entitymap,"Cloud",obj_cloud);
 ds_map_add(global.entitymap,"Arrow",obj_arrow);
+ds_map_add(global.entitymap,"Bridge",obj_bridge);
+ds_map_add(global.entitymap,"Firebar",obj_firebar);
 
 //Set tile positions
 global.tileposX=ds_map_create();
@@ -131,7 +133,7 @@ ds_map_add(global.tileposX,"OnOff_switch",103);
 ds_map_add(global.tileposX,"OnOff_block_ON",137);
 ds_map_add(global.tileposX,"OnOff_block_OFF",188);
 ds_map_add(global.tileposX,"Cloud",205);
-
+ds_map_add(global.tileposX,"Firebar",239);
 
 global.tileposY=ds_map_create();
 
@@ -145,6 +147,7 @@ ds_map_add(global.tileposY,"OnOff_switch",1);
 ds_map_add(global.tileposY,"OnOff_block_ON",1);
 ds_map_add(global.tileposY,"OnOff_block_OFF",1);
 ds_map_add(global.tileposY,"Cloud",1);
+ds_map_add(global.tileposY,"Firebar",1);
 
 //Set sprites
 /*
@@ -165,6 +168,8 @@ ds_map_add(global.spritemap,"OnOff_block_ON",spr_onoff_block_red);
 ds_map_add(global.spritemap,"OnOff_block_OFF",spr_onoff_block_blue);
 ds_map_add(global.spritemap,"Cloud",spr_cloud);
 ds_map_add(global.spritemap,"Arrow",spr_arrow_icon);
+ds_map_add(global.spritemap,"Bridge",spr_bridge_icon);
+ds_map_add(global.spritemap,"Firebar",spr_firebar_block);
 
 //Object type
 global.entityclass=ds_map_create();
@@ -182,6 +187,8 @@ ds_map_add(global.entityclass,"OnOff_block_ON",3);
 ds_map_add(global.entityclass,"OnOff_block_OFF",3);
 ds_map_add(global.entityclass,"Cloud",0);
 ds_map_add(global.entityclass,"Arrow",3);
+ds_map_add(global.entityclass,"Bridge",0);
+ds_map_add(global.entityclass,"Firebar",3);
 
 
 for(var a=0; a&lt;12; a++){ global.selected_entity[a]="Coin"; }
@@ -190,6 +197,7 @@ global.selected_entity[2]="QuestBlock";global.selected_entity[3]="InvBlock";
 global.selected_entity[4]="Spiketrap";global.selected_entity[4]="OnOff_switch";
 global.selected_entity[5]="OnOff_block_ON";global.selected_entity[6]="OnOff_block_OFF";
 global.selected_entity[7]="Cloud";global.selected_entity[8]="Arrow";
+global.selected_entity[9]="Bridge";/*global.selected_entity[10]="Firebar";*/
 </string>
           </argument>
         </arguments>

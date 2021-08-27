@@ -20,6 +20,7 @@
   <width>19</width>
   <height>19</height>
   <frames>
-    <frame index="0">images\spr_world_icon_0.png</frame>
+    <frame index="0">images\spr_shadowmario_button_0.png</frame>
+    <frame index="1">images\spr_shadowmario_button_1.png</frame>
   </frames>
 </sprite>

@@ -34,6 +34,7 @@ grid_surf=-4;
 selected_id=-1;
 w=0; wt=0;
 
+shadow_allow=false;
 
 instance_create(64,340,obj_mario_editor);
 
@@ -46,6 +47,11 @@ VY=obj_controller.Window_H;
 EntitySelected=-4;
 
 Placing=0;
+Dragging=0;
+
+LatestEntity=-4;
+
+Drag_id=-4;
 
 //Level attributes
 World=0;
@@ -63,6 +69,8 @@ redo_time=-1;
 delet_time=-1;
 delet_pos=0;
 delet_shake=0;
+
+global.editing=0;
 </string>
           </argument>
         </arguments>
@@ -139,6 +147,36 @@ delet_shake=0;
 
 Topmenu_height=36;
 
+
+
+
+Leftmenu_top=37;
+Leftmenu_width=55;
+
+
+ButtonLeft_Sprite[0]=spr_game_button;
+ButtonLeft_X[0]=28;
+ButtonLeft_Y[0]=16;
+
+ButtonLeft_Sprite[1]=spr_world_icon;
+ButtonLeft_X[1]=16;
+ButtonLeft_Y[1]=39;
+
+
+ButtonLeft_Sprite[2]=spr_time_button;
+ButtonLeft_X[2]=28;
+ButtonLeft_Y[2]=83;
+
+ButtonLeft_Sprite[3]=spr_shadowmario_button;
+ButtonLeft_X[3]=39;
+ButtonLeft_Y[3]=129;
+
+ButtonLeft_Sprite[4]=spr_playmovie_base;
+ButtonLeft_X[4]=24;
+ButtonLeft_Y[4]=164;
+
+
+
 Rightmenu_top=37;
 Rightmenu_width=33;
 
@@ -167,7 +205,7 @@ ButtonRight_Sprite[5]=spr_rocket_UI;
 ButtonRight_X[5]=-16;
 ButtonRight_Y[5]=196-Rightmenu_top;
 
-Menus=2;
+Menus=3;
 MenuClose[Menus-1]=0;
 MenuOffset[Menus-1]=0;
 
@@ -245,6 +283,10 @@ instance_destroy(obj_mario_shadow);
                 case obj_arrow :
                       child.image_angle=Attribute[Attributes.Direction];
                 break;
+                
+                case obj_bridge :
+                      child.image_xscale=Attribute[Attributes.Width];
+                break;
          
          }
          
@@ -294,6 +336,7 @@ if(room!=rm_editor){exit;}
 
     MenuOffset[0]=scr_approach(MenuOffset[0],MenuClose[0],0.1);
     MenuOffset[1]=scr_approach(MenuOffset[1],MenuClose[1],0.1);
+    MenuOffset[2]=scr_approach(MenuOffset[2],MenuClose[2],0.1);
 
 
 EntitySelected=position_meeting(mouse_x,mouse_y,obj_editor_entity);
@@ -322,6 +365,8 @@ if(state==ControlState.normal){
  //Select an onject
  if(EntitySelected){
  
+ 
+ 
     if(mouse_check_button_pressed(mb_right)){
        
        //Get out of the placing state
@@ -346,16 +391,47 @@ if(state==ControlState.normal){
        with(entity){
        
             switch(Entity_id){
-                   case "Arrow": with(other){event_user(2);} Attribute[Attributes.Direction]+=45; break;
+                   case "Arrow":  Attribute[Attributes.Direction]+=45; with(other){event_user(2);} break;
             }
        
        }
        
        
        
+    }else if(mouse_check_button_pressed(mb_left)){
+    
+        Drag_id=instance_nearest(mouse_x,mouse_y,obj_editor_entity);
+      
     }
  
  }
+ 
+ //Drag
+ if(mouse_check_button(mb_left))
+ &amp;&amp;(device_mouse_y(0)&gt;view_yview+Topmenu_height+4-Topmenu_height*MenuOffset[0])&amp;&amp;
+   (device_mouse_x(0)&gt;view_xview+Leftmenu_width+4-Leftmenu_width*MenuOffset[2])&amp;&amp;
+   (device_mouse_x(0)&lt;view_xview+view_wview-Rightmenu_width-6+Rightmenu_width*MenuOffset[1])
+   &amp;&amp;(!instance_exists(obj_reset_rocket)){
+    
+        if(Dragging&lt;1)&amp;&amp;(instance_exists(Drag_id))&amp;&amp;(EntitySelected)&amp;&amp;(!Placing){ if(Drag_id!=LatestEntity)&amp;&amp;(Drag_id.Edited==0){ Dragging+=0.35; } }
+ 
+        if(Dragging&gt;=1)&amp;&amp;(instance_exists(Drag_id))&amp;&amp;(!Placing){
+        
+           //Get out of the placing state
+           enitityplace=0; selected_id=-1;
+       
+       
+           //Get the entity id
+           var entity = Drag_id;
+           
+           if(entity.UsesSprite==-4){ var off=-8; }else{ var off=0; }
+           
+           entity.x=mouse_x+off; entity.y=mouse_y+off;
+           with(entity){move_snap(16,16);}
+        
+        }
+      
+ }else{ if(Dragging&gt;=1){event_user(2);} Dragging=0; }
  
  
 }else{//Eraser
@@ -497,6 +573,23 @@ ButtonRight_X[5]=-16+random_range(-delet_shake,delet_shake);
 ButtonRight_Y[5]=196-Rightmenu_top+random_range(-delet_shake,delet_shake);
 
 
+//Shadow mario
+if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
+   view_xview+Leftmenu_width*MenuOffset[2]+ButtonLeft_X[3]-sprite_get_xoffset(ButtonLeft_Sprite[3]),
+   view_yview+Leftmenu_top+ButtonLeft_Y[3]-sprite_get_yoffset(ButtonLeft_Sprite[3]),
+   view_xview+Leftmenu_width*MenuOffset[2]+ButtonLeft_X[3]+sprite_get_xoffset(ButtonLeft_Sprite[3]),
+   view_yview+Leftmenu_top+ButtonLeft_Y[3]+sprite_get_yoffset(ButtonLeft_Sprite[3])
+   )){
+   
+   if(mouse_check_button_pressed(mb_left)){
+      shadow_allow=!shadow_allow;
+   }
+   
+}
+   
+
+
+
 
 
 //Released event
@@ -504,9 +597,15 @@ if(mouse_check_button_released(mb_left)){
    
    if(Placing){  event_user(2); }
 
+   if(Dragging&gt;=1)&amp;&amp;(!Placing){
+      with(Drag_id){if(collision_rectangle(bbox_left+1,bbox_top+1,bbox_right-1,bbox_bottom-1,obj_editor_entity,0,1)){instance_destroy();}}
+      event_user(2);
+   }
+   
 
    Placing=0;
-   
+   Dragging=0;
+   LatestEntity=-4;
    undo_time=-1;
    redo_time=-1;
    
@@ -624,9 +723,11 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
                      Attribute[a] = real(ds_grid_get(levelmap,a+3,pos+1));
                  }
             
-            }
+            
             
             UsesSprite = real(ds_grid_get(levelmap,array_length_1d(Attribute)+3,pos+1));
+            
+            }
             
              show_debug_message("Item created successfully at "
              +string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
@@ -1060,6 +1161,8 @@ if !view_enabled {
    view_enabled=true;
 
 }
+
+global.editing=0;
 </string>
           </argument>
         </arguments>
@@ -1122,7 +1225,7 @@ draw_clear_alpha(c_blue,0);
 
 
 
-draw_primitive_begin(pr_trianglefan);
+/*draw_primitive_begin(pr_trianglefan);
 draw_vertex_colour(display_get_gui_width()-Rightmenu_width-5,Rightmenu_top,c_black,0);
 draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Rightmenu_top,c_black,.25);
 draw_vertex_colour(display_get_gui_width()-Rightmenu_width,display_get_gui_height(),c_black,.25);
@@ -1139,7 +1242,7 @@ draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height-Topmen
 
 draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height-Topmenu_height*MenuOffset[0]+5,c_black,0);
 draw_vertex_colour(0,Topmenu_height-Topmenu_height*MenuOffset[0]+5,c_black,0);
-draw_primitive_end();
+draw_primitive_end();*/
 
 
 //
@@ -1159,7 +1262,7 @@ if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
 halfX-6,Topmenu_height-Topmenu_height*MenuOffset[0],
 halfX+6,Topmenu_height-Topmenu_height*MenuOffset[0]+4)){
 
-   if(mouse_check_button_pressed(mb_left)){ enitityplace=0; selected_id=-1; MenuClose[0]=!MenuClose[0]; }
+   if(mouse_check_button_pressed(mb_left)){  MenuClose[0]=!MenuClose[0]; }
 
 }
 
@@ -1194,7 +1297,6 @@ display_get_gui_width()-17,21-Topmenu_height*MenuOffset[0],1,1,0,c_black,0.25);
 
 draw_sprite(spr_magnUI,0,
 display_get_gui_width()-17,20-Topmenu_height*MenuOffset[0]);
-
 
 
 
@@ -1237,6 +1339,8 @@ for(var a=0; a&lt;array_length_1d(ButtonRight_Sprite); a++){
 
     draw_sprite_ext(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a]+Rightmenu_width*MenuOffset[1],ButtonRight_Y[a]+1+Rightmenu_top,1,1,0,c_black,0.25);
     draw_sprite(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a]+Rightmenu_width*MenuOffset[1],ButtonRight_Y[a]+Rightmenu_top);
+    
+   
 
 }
 
@@ -1258,6 +1362,83 @@ draw_set_colour(c_white);
 draw_pie(display_get_gui_width()+Rightmenu_width*MenuOffset[1]+ButtonRight_X[4]+sprite_get_xoffset(ButtonRight_Sprite[4]) ,
 ButtonRight_Y[4]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[4]),max(undo_time ,0), 1, c_red, 3, 1);
 
+
+
+//Left side
+draw_set_colour(c_white);
+draw_set_alpha(0.4);
+
+draw_rectangle(-Leftmenu_width*MenuOffset[2],Leftmenu_top,Leftmenu_width-Leftmenu_width*MenuOffset[2],display_get_gui_height()-Leftmenu_top,0);
+
+draw_set_alpha(0.8);
+draw_rectangle(-Leftmenu_width*MenuOffset[2],display_get_gui_height()-Leftmenu_top-24,Leftmenu_width-Leftmenu_width*MenuOffset[2],display_get_gui_height()-Leftmenu_top,0);
+
+draw_set_alpha(1);
+
+
+var halfY=Leftmenu_top + (display_get_gui_height()-Leftmenu_top-Leftmenu_top)/2;
+
+draw_rectangle(Leftmenu_width-Leftmenu_width*MenuOffset[2],halfY-6,Leftmenu_width-Leftmenu_width*MenuOffset[2]+4,halfY+6,0);
+
+
+//Slide
+if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
+Leftmenu_width-Leftmenu_width*MenuOffset[2],halfY-6,Leftmenu_width-Leftmenu_width*MenuOffset[2]+4,halfY+6
+)){
+   if(mouse_check_button_pressed(mb_left)){  MenuClose[2]=!MenuClose[2]; }
+}
+
+
+
+draw_line(Leftmenu_width-Leftmenu_width*MenuOffset[2],Leftmenu_top-1,Leftmenu_width-Leftmenu_width*MenuOffset[2],display_get_gui_height()-Leftmenu_top-1);
+draw_line(-1-Leftmenu_width*MenuOffset[2],display_get_gui_height()-Leftmenu_top,Leftmenu_width-1-Leftmenu_width*MenuOffset[2],display_get_gui_height()-Leftmenu_top);
+draw_line(-1-Leftmenu_width*MenuOffset[2],Leftmenu_top-1,Leftmenu_width-1-Leftmenu_width*MenuOffset[2],Leftmenu_top-1);
+
+//Draw the right buttons
+for(var a=0; a&lt;array_length_1d(ButtonLeft_Sprite); a++){
+
+    
+
+    draw_sprite_ext(ButtonLeft_Sprite[a],0,ButtonLeft_X[a]-Leftmenu_width*MenuOffset[2],ButtonLeft_Y[a]+1+Leftmenu_top,1,1,0,c_black,0.25);
+    draw_sprite(ButtonLeft_Sprite[a],0,ButtonLeft_X[a]-Leftmenu_width*MenuOffset[2],ButtonLeft_Y[a]+Leftmenu_top);
+
+     switch(a){ 
+        case 0: 
+          //texture_set_interpolation(true);
+          draw_sprite_ext(spr_game_icon,0,ButtonLeft_X[0]-Leftmenu_width*MenuOffset[2],ButtonLeft_Y[0]+Leftmenu_top,1,1,0,c_white,1);
+          texture_set_interpolation(false);
+        break;
+        
+        case 2:
+          draw_set_halign(fa_left); draw_set_valign(fa_middle); draw_set_colour(c_black); draw_set_font(fnt_mario);
+          draw_text_transformed(ButtonLeft_X[0]-Leftmenu_width*MenuOffset[2]-4,ButtonLeft_Y[2]+Leftmenu_top+2,"000",0.5,0.5,0);
+          draw_set_colour(c_white);
+        break;
+        
+        case 3:
+          if(shadow_allow){draw_sprite(spr_shadowmario_button,1,ButtonLeft_X[a]-Leftmenu_width*MenuOffset[2],ButtonLeft_Y[a]+Leftmenu_top);}
+        break;
+        
+        case 4:
+          draw_sprite(spr_playmovie_bar,0,ButtonLeft_X[4]-sprite_get_xoffset(ButtonLeft_Sprite[4])-Leftmenu_width*MenuOffset[2],
+          ButtonLeft_Y[4]+Leftmenu_top-sprite_get_yoffset(ButtonLeft_Sprite[4]));
+        break;
+    }
+    
+}
+
+//Play
+if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
+   ButtonLeft_X[4]-sprite_get_xoffset(ButtonLeft_Sprite[4]),
+   Leftmenu_top+ButtonLeft_Y[4]-sprite_get_yoffset(ButtonLeft_Sprite[4])-sprite_get_height(spr_playmovie_bar),
+   ButtonLeft_X[4]+sprite_get_xoffset(ButtonLeft_Sprite[4]),
+   Leftmenu_top+ButtonLeft_Y[4]+sprite_get_yoffset(ButtonLeft_Sprite[4]) )
+
+){
+  if(mouse_check_button_pressed(mb_left)){
+     event_perform(ev_keypress, vk_enter);
+  }
+}
 
 
 surface_reset_target();
@@ -1290,7 +1471,7 @@ draw_text_transformed(5,80,"Press ENTER to play#Press Z to save#Press X to load"
 
 infoalpha=scr_approach(infoalpha,0,0.2);
 
-draw_text_transformed(5,display_get_gui_height()-20,MenuOffset[0],0.5,0.5,0);
+draw_text_transformed(5,display_get_gui_height()-20,Dragging,0.5,0.5,0);
 
 draw_set_colour(c_white);
 
@@ -1318,7 +1499,6 @@ draw_set_colour(c_white);
           <argument>
             <kind>1</kind>
             <string>if(room!=rm_editor){exit;}
-
 
 
 depth=6;
@@ -1403,12 +1583,33 @@ if(state==ControlState.normal){
            device_mouse_x(0),device_mouse_y(0),1,1,0,c_white,1);
            
            break;
+           
+           case "Bridge" :
+           
+           draw_sprite_ext(
+           spr_bridge_base,0,device_mouse_x(0),device_mouse_y(0),1,1,0,c_white,1);
+           draw_sprite_ext(
+           spr_bridge_top,0,device_mouse_x(0),device_mouse_y(0)-16,1,1,0,c_white,1);
+           
+           draw_sprite_ext(
+           spr_bridge_base,1,device_mouse_x(0)+16,device_mouse_y(0),1,1,0,c_white,1);
+           draw_sprite_ext(
+           spr_bridge_top,1,device_mouse_x(0)+16,device_mouse_y(0)-16,1,1,0,c_white,1);
+           
+           draw_sprite_ext(
+           spr_bridge_base,2,device_mouse_x(0)+32,device_mouse_y(0),1,1,0,c_white,1);
+           draw_sprite_ext(
+           spr_bridge_top,2,device_mouse_x(0)+32,device_mouse_y(0)-16,1,1,0,c_white,1);
+           
+           break;
    
    }
    
    
    if(mouse_check_button(mb_left))&amp;&amp;(device_mouse_y(0)&gt;view_yview+Topmenu_height+4-Topmenu_height*MenuOffset[0])&amp;&amp;
-   (device_mouse_x(0)&lt;view_xview+view_wview-Rightmenu_width-6+Rightmenu_width*MenuOffset[1])&amp;&amp;(!instance_exists(obj_reset_rocket)){
+   (device_mouse_x(0)&gt;view_xview+Leftmenu_width+4-Leftmenu_width*MenuOffset[2])&amp;&amp;
+   (device_mouse_x(0)&lt;view_xview+view_wview-Rightmenu_width-6+Rightmenu_width*MenuOffset[1])
+   &amp;&amp;(!instance_exists(obj_reset_rocket)&amp;&amp;!Dragging)&amp;&amp;(!EntitySelected){
    
       with(instance_create(device_mouse_x(0)-8,device_mouse_y(0)-8,obj_editor_entity)){
       
@@ -1418,12 +1619,14 @@ if(state==ControlState.normal){
            switch(global.selected_entity[other.selected_id]){
                                     
                   case "Arrow": UsesSprite=spr_arrow; x++; y++;  break;
+                  case "Bridge": UsesSprite=spr_bridge_base; x++; y++; break;
                   
            }
       
            
            move_snap(16,16)
            other.Placing=1;//alarm[1]=1;
+           other.LatestEntity=id;
       
       }
       

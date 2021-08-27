@@ -50,7 +50,13 @@
       <sprite>sprites\spr_mario_spinjump</sprite>
     </sprites>
     <sprites name="UI">
+      <sprite>sprites\spr_game_button</sprite>
+      <sprite>sprites\spr_game_icon</sprite>
+      <sprite>sprites\spr_time_button</sprite>
       <sprite>sprites\spr_world_icon</sprite>
+      <sprite>sprites\spr_playmovie_bar</sprite>
+      <sprite>sprites\spr_playmovie_base</sprite>
+      <sprite>sprites\spr_shadowmario_button</sprite>
       <sprite>sprites\spr_cursor</sprite>
       <sprite>sprites\spr_objectUI</sprite>
       <sprite>sprites\spr_magnUI</sprite>
@@ -63,6 +69,7 @@
       <sprite>sprites\spr_reset_rocket</sprite>
       <sprites name="Special item icons">
         <sprite>sprites\spr_arrow_icon</sprite>
+        <sprite>sprites\spr_bridge_icon</sprite>
       </sprites>
     </sprites>
     <sprites name="In game">
@@ -74,6 +81,10 @@
         <sprite>sprites\spr_invisible_block</sprite>
         <sprite>sprites\spr_spiketrap</sprite>
         <sprite>sprites\spr_cloud</sprite>
+        <sprites name="Bridge">
+          <sprite>sprites\spr_bridge_top</sprite>
+          <sprite>sprites\spr_bridge_base</sprite>
+        </sprites>
       </sprites>
       <sprites name="Green">
         <sprite>sprites\spr_coin</sprite>
@@ -88,12 +99,17 @@
           <sprite>sprites\spr_onoff_block_blue</sprite>
         </sprites>
         <sprite>sprites\spr_arrow</sprite>
+        <sprites name="Firebar">
+          <sprite>sprites\spr_firebar_block</sprite>
+          <sprite>sprites\spr_firebar</sprite>
+        </sprites>
       </sprites>
       <sprite>sprites\spr_pinkplatform</sprite>
     </sprites>
     <sprites name="In editor">
       <sprite>sprites\spr_eraser</sprite>
       <sprite>sprites\spr_arrow_entity</sprite>
+      <sprite>sprites\spr_extend_circle</sprite>
     </sprites>
     <sprites name="Effects">
       <sprite>sprites\spr_ring</sprite>
@@ -147,6 +163,7 @@
         <object>objects\obj_question_block</object>
         <object>objects\obj_spiketrap</object>
         <object>objects\obj_cloud</object>
+        <object>objects\obj_bridge</object>
       </objects>
       <objects name="Green">
         <object>objects\obj_coin</object>
@@ -158,6 +175,7 @@
           <object>objects\obj_onoff_block_blue</object>
         </objects>
         <object>objects\obj_arrow</object>
+        <object>objects\obj_firebar</object>
       </objects>
     </objects>
     <objects name="In editor">

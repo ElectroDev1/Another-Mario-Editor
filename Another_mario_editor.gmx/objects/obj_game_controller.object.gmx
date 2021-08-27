@@ -8,6 +8,33 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="0" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Leftmenu_top=37;
+Leftmenu_width=55;
+ButtonLeft_Sprite[0]=spr_playmovie_base;
+ButtonLeft_X[0]=24;
+ButtonLeft_Y[0]=164;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="4">
       <action>
         <libid>1</libid>
@@ -50,6 +77,27 @@
             <string>draw_set_colour(c_black);
 draw_text_transformed(5,80,"Press ENTER#to go back",0.5,0.5,0);
 draw_set_colour(c_white);
+
+
+draw_sprite_ext(ButtonLeft_Sprite[0],0,ButtonLeft_X[0],ButtonLeft_Y[0]+1+Leftmenu_top,1,1,0,c_black,0.25);
+    draw_sprite(ButtonLeft_Sprite[0],0,ButtonLeft_X[0],ButtonLeft_Y[0]+Leftmenu_top);
+    
+draw_sprite(spr_playmovie_bar,0,ButtonLeft_X[0]-sprite_get_xoffset(ButtonLeft_Sprite[0]),
+          ButtonLeft_Y[0]+Leftmenu_top-sprite_get_yoffset(ButtonLeft_Sprite[0]));
+          
+//Play
+if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
+   ButtonLeft_X[0]-sprite_get_xoffset(ButtonLeft_Sprite[0]),
+   Leftmenu_top+ButtonLeft_Y[0]-sprite_get_yoffset(ButtonLeft_Sprite[0])-sprite_get_height(spr_playmovie_bar),
+   ButtonLeft_X[0]+sprite_get_xoffset(ButtonLeft_Sprite[0]),
+   Leftmenu_top+ButtonLeft_Y[0]+sprite_get_yoffset(ButtonLeft_Sprite[0]) )
+
+){
+  if(mouse_check_button_pressed(mb_left)){
+     with(obj_editor_controller){event_perform(ev_keypress, vk_enter);}
+  }
+}
+
 </string>
           </argument>
         </arguments>

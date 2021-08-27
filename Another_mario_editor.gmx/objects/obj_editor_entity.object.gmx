@@ -30,6 +30,7 @@ w=0; wt=0;
 
 Angle=0;
 
+DrawSprite=1;
 UsesSprite=-4;
 image_speed=0;
 
@@ -50,6 +51,8 @@ child=-4;
 //Special attributes
 item=noone; //Item inside, used for container objects like blocks
 
+
+Edited=0;
 
 Attribute[Attributes.Mushroom]=false;
 Attribute[Attributes.Wings]=false;
@@ -140,9 +143,18 @@ if(!UsesSprite){
  tile=tile_add(
  global.tileset,
  global.tileposX[? Entity_id],global.tileposY[? Entity_id],
- width,height,x,y,depth);
+ width,height,x,y,1);
  
 }else{sprite_index=UsesSprite;}
+
+   switch Entity_id {
+        case "Firebar":
+        case "Arrow":
+        
+             with(obj_editor_controller){enitityplace=0; selected_id=-1;}
+        
+        break;
+   }
 
 }
 </string>
@@ -227,7 +239,7 @@ if(Angle&gt;=360){Angle-=360; Attribute[Attributes.Direction]-=360;}
 if(select){
 
    
-        draw_set_colour(c_blue);
+        if(!collision_rectangle(bbox_left,bbox_top,bbox_right,bbox_bottom,obj_editor_entity,0,1)){draw_set_colour(c_blue);}else{draw_set_colour(c_red);}
         draw_set_alpha(0.6);
         draw_rectangle(bbox_left+1,bbox_top+1,bbox_right+1,bbox_bottom+1,0);
         draw_set_alpha(1);
@@ -237,11 +249,13 @@ if(select){
 
 
 
-if(UsesSprite){
+if(UsesSprite)&amp;&amp;(DrawSprite){
    sprite_index=UsesSprite;
    draw_sprite_ext(UsesSprite,image_index,x,y,image_xscale,image_yscale,Angle,c_white,1);
 }
 
+
+//Special behaviours
 switch(Entity_id){
 
        case "Arrow":
@@ -250,8 +264,116 @@ switch(Entity_id){
             1+0.2*w,1+0.2*w,Angle,c_white,1);
        
        break;
+       
+       
+       case "Firebar":
+       
+            depth=-1;
+            Attribute[Attributes.Width]=max(3,Attribute[Attributes.Width]);
+            
+            for(var a=0; a&lt;Attribute[Attributes.Width]; a++){
+                draw_sprite(spr_firebar,0,
+                x+9 + lengthdir_x(9*a, Attribute[Attributes.Direction]),
+                y+9 + lengthdir_y(9*a, Attribute[Attributes.Direction]));
+            }
+            
+            draw_sprite_ext(spr_extend_circle,0,
+            x+9 + lengthdir_x(9*Attribute[Attributes.Width], Attribute[Attributes.Direction]),
+            y+9 + lengthdir_y(9*Attribute[Attributes.Width], Attribute[Attributes.Direction]),
+            1+0.2*w,1+0.2*w,0,c_white,1);
+            
+            if(point_in_circle(mouse_x,mouse_y,
+            x+9 + lengthdir_x(9*Attribute[Attributes.Width], Attribute[Attributes.Direction]),
+            y+9 + lengthdir_y(9*Attribute[Attributes.Width], Attribute[Attributes.Direction]),9)){
+               if(mouse_check_button_pressed(mb_left)){ with(obj_editor_controller){enitityplace=0; selected_id=-1;} global.editing=1; Edited=1;  }
+            }
+            
+            
+            if(Edited){
+            
+               //Initialize circle collisions
+               var collision_list=ds_map_create();
+               
+               for(var a=0; a&lt;Attribute[Attributes.Width]; a++){
+                   ds_map_add(collision_list,string(a),
+                   point_in_circle(mouse_x,mouse_y,
+                   x+9 + lengthdir_x(9*a, Attribute[Attributes.Direction]),
+                   y+9 + lengthdir_y(9*a, Attribute[Attributes.Direction]), 9+9*a ));
+                   
+                   draw_set_alpha(0.3);
+                   
+                   if(collision_list[? string(a)]){draw_set_colour(c_green);}else{draw_set_colour(c_red);}
+                   draw_circle(x+9,y+9,9+9*a,0);
+                   
+                   draw_set_alpha(1);
+                   
+               }
+               
+               if(collision_list[? string(Attribute[Attributes.Width])]==0){  Attribute[Attributes.Width]++; with(obj_editor_controller){ event_user(2); } }
+            
+            }
+       
+       break;
+       
+       
+       case "Bridge":
+       
+            Attribute[Attributes.Width]=max(3,Attribute[Attributes.Width]);
+            DrawSprite=0;
+            
+            image_xscale=Attribute[Attributes.Width];
+       
+            for(var a=0; a&lt;image_xscale; a++){
+    
+            if(a==0){
+    
+              draw_sprite(spr_bridge_top,0,x+a*16,y-16);
+              draw_sprite(spr_bridge_base,0,x+a*16,y);
+              
+              draw_sprite_ext(spr_extend_circle,0,x+a*16+8,y+8,1+0.2*w,1+0.2*w,Angle,c_white,1);
+              
+              //Drag to the left
+              if(point_in_circle(mouse_x,mouse_y,x+a*16+8,y+8,9)){
+                 if(mouse_check_button_pressed(mb_left)){ global.editing=1; Edited=1; with(obj_editor_controller){enitityplace=0; selected_id=-1;} }
+              }
+       
+           }else if(a&gt;=image_xscale-1){
+    
+              draw_sprite(spr_bridge_top,2,x+a*16,y-16);
+              draw_sprite(spr_bridge_base,2,x+a*16,y);
+              
+              draw_sprite_ext(spr_extend_circle,0,x+a*16+8,y+8,1+0.2*w,1+0.2*w,Angle,c_white,1);
+              
+              //Drag to the left
+              if(point_in_circle(mouse_x,mouse_y,x+a*16+8,y+8,9)){
+                 if(mouse_check_button_pressed(mb_left)){ global.editing=1; Edited=2; with(obj_editor_controller){enitityplace=0; selected_id=-1;} }
+              }
+       
+           }
+           else{
+    
+              draw_sprite(spr_bridge_top,0,x+a*16,y-16);
+              draw_sprite(spr_bridge_base,0,x+a*16,y);
+       
+           }
+
+         }
+         
+         if(Edited==1){ if(mouse_x&lt;bbox_left-6){ Attribute[Attributes.Width]++; x-=16; } 
+                        if(mouse_x&gt;bbox_left+16+6)&amp;&amp;(Attribute[Attributes.Width]&gt;3){ Attribute[Attributes.Width]--; x+=16; }
+         }
+         
+         if(Edited==2){ if(mouse_x&gt;bbox_right+6){ Attribute[Attributes.Width]++;} 
+                        if(mouse_x&lt;bbox_right-16-6)&amp;&amp;(Attribute[Attributes.Width]&gt;3){ Attribute[Attributes.Width]--; }
+         }
+       
+       break;
 
 }
+
+
+if(mouse_check_button_released(mb_left))&amp;&amp;(Edited){ with(obj_editor_controller){event_user(2);} global.editing=1; Edited=0; }
+
 </string>
           </argument>
         </arguments>
