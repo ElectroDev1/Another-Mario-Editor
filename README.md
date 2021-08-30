@@ -1,6 +1,6 @@
 # Another-Mario-Editor
 
-![AME logo](https://github.com/ElectroDev1/Another-Mario-Editor/logo.png)
+![AME logo](https://github.com/ElectroDev1/Another-Mario-Editor/blob/main/logo.png)
 
 This is just a soft recreation of Super Mario Maker, similar to my attempt at making a soft
 remake of Game Maker Garage.
