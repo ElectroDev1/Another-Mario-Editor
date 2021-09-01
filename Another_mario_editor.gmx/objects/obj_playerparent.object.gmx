@@ -218,7 +218,7 @@ if(key_jump){
 
 run=scr_input_check(input.action1);
 
-if(crouch){ if(!onfloor){spd=walk_spd*abs(INP);}else{spd=scr_approach(spd,0,0.25);} 
+if(crouch){ if(!onfloor){ spd=walk_spd*abs(INP);   }else{spd=scr_approach(spd,0,0.25);} 
 
 }else{
  spd=scr_approach(spd, (walk_spd* ((0.5*run)+1) ) *abs(INP), 0.25);; 
@@ -231,6 +231,8 @@ if(y&gt;=view_yview+view_hview+38){
         event_perform(ev_keypress, vk_enter);
    }
 }
+
+
 
 
 </string>
@@ -376,8 +378,6 @@ else{
 
 
 draw_sprite_ext(sprite_index,image_index,floor(x),floor(y),image_xscale*IX,image_yscale,Angle,image_blend,image_alpha);
-
-draw_text(x,y-60,spinjump);
 </string>
           </argument>
         </arguments>

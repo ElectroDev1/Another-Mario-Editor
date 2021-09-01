@@ -26,6 +26,13 @@
           <argument>
             <kind>1</kind>
             <string>global.debug=0;
+window_command_hook(window_command_close);
+//window_set_background_redraw(true);
+
+instance_create(mouse_x,mouse_y,obj_mousechek);
+
+global.saved=0;
+
 
 ViewXoffset=0;
 ViewYoffset=0;
@@ -79,6 +86,11 @@ enum Attributes {
 }
 
 global.switchstate=0;
+
+
+global.closing=0;
+global.saved=1;
+screensprite=-4;
 </string>
           </argument>
         </arguments>
@@ -101,6 +113,8 @@ global.switchstate=0;
             <kind>1</kind>
             <string>///Initialize enitity ids
 global.tileset=background_add("Tiles\Tile_ground.png",1,0);
+
+entityname[0]="Semis"; entityname[1]="Ground"
 
 global.entitymap=ds_map_create();
 
@@ -174,6 +188,8 @@ ds_map_add(global.spritemap,"Firebar",spr_firebar_block);
 //Object type
 global.entityclass=ds_map_create();
 
+
+
 ds_map_add(global.entityclass,"Semis",0);
 ds_map_add(global.entityclass,"Ground",0);
 ds_map_add(global.entityclass,"Coin",1);
@@ -226,6 +242,51 @@ global.selected_entity[9]="Bridge";/*global.selected_entity[10]="Firebar";*/
         </arguments>
       </action>
     </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Get if we're trying to close the game
+if (window_command_check(window_command_close)) { 
+
+    show_debug_message("Close attempted"); 
+   
+   if(room==rm_ingame){
+      with(obj_editor_controller){ event_perform(ev_keypress,vk_enter); }
+   }
+     
+   if(!global.saved){
+   
+    if(!global.closing){
+      global.closing=1;
+    }
+      
+   }else{
+      game_end();
+   } 
+      
+   
+    
+    
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="5" enumb="18">
       <action>
         <libid>1</libid>
@@ -254,6 +315,11 @@ for(var a=0; a&lt;=5; a++){
       event_user(0);
    }
 }
+
+if(keyboard_check_pressed(vk_f5)){
+   game_end();
+}
+
 </string>
           </argument>
         </arguments>
@@ -450,6 +516,23 @@ draw_set_blend_mode(bm_normal);
           <argument>
             <kind>1</kind>
             <string>
+//Closing menu
+if(global.closing){
+
+   var T = scr_draw_message(display_get_gui_width(),display_get_gui_height(),
+   "The level wasn't saved!#Would you like to save?","Save","Don't save","Cancel");
+   
+   switch(T){
+    
+       case 1: with(obj_editor_controller){event_user(0);} game_end(); break;
+       case 2: game_end(); break;
+       case 3: global.closing=0; break;
+   
+   }
+
+}
+
+draw_set_halign(fa_left); draw_set_valign(fa_top);
 draw_set_colour(c_black);
 draw_text_transformed(2,2,
 "FPS:"+string(fps)+"#Room W:"+string(room_width)+"#View X:"+string(view_xview)
@@ -460,6 +543,31 @@ depth=-10;
 draw_sprite_ext(global.cursor,0,device_mouse_x_to_gui(0)+8,device_mouse_y_to_gui(0)+8,
 0.2,0.2,global.cursor_angle,c_white,1);
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if(global.closing){
+   
+}
 </string>
           </argument>
         </arguments>

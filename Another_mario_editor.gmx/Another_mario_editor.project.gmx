@@ -45,6 +45,8 @@
   </datafiles>
   <NewExtensions>
     <extension index="0">extensions\GridBuffer</extension>
+    <extension index="1">extensions\NekoPresence</extension>
+    <extension index="2">extensions\window_command_hook</extension>
   </NewExtensions>
   <sounds name="sound"/>
   <sprites name="sprites">
@@ -55,6 +57,7 @@
       <sprite>sprites\spr_slope_sl</sprite>
       <sprite>sprites\spr_slope_sr</sprite>
       <sprite>sprites\spr_solid</sprite>
+      <sprite>sprites\spr_mousecheck</sprite>
     </sprites>
     <sprites name="Mario">
       <sprite>sprites\spr_mario_idle</sprite>
@@ -148,12 +151,15 @@
     <script>scripts\scr_collision_rectangle_list.gml</script>
     <script>scripts\ds_grid_write_buffer.gml</script>
     <script>scripts\draw_pie.gml</script>
+    <script>scripts\window_command_toggle.gml</script>
+    <script>scripts\scr_draw_message.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_mario</font>
     <font>fonts\fnt_hd</font>
   </fonts>
   <objects name="objects">
+    <object>objects\obj_mousechek</object>
     <object>objects\obj_controller</object>
     <object>objects\oGridBufferTest</object>
     <objects name="Collision">
@@ -208,6 +214,7 @@
     <objects name="Effects">
       <object>objects\obj_ring_effect</object>
     </objects>
+    <object>objects\objNekoPresenceDemo</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_init</room>

@@ -25,72 +25,6 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>enitityplace=-1;
-
-gui_surf=-4;
-
-grid_surf=-4;
-
-selected_id=-1;
-w=0; wt=0;
-
-shadow_allow=false;
-
-instance_create(64,340,obj_mario_editor);
-
-state=0;
-enum ControlState { normal, erase }
-
-VX=0;
-VY=obj_controller.Window_H;
-
-EntitySelected=-4;
-
-Placing=0;
-Dragging=0;
-
-LatestEntity=-4;
-
-Drag_id=-4;
-
-//Level attributes
-World=0;
-Time=0;
-Scroll=0; //Includes scrollspeed too
-ClearCond=0;
-
-infostring="";
-infoalpha=0;
-
-temp_index=-1;
-
-undo_time=-1;
-redo_time=-1;
-delet_time=-1;
-delet_pos=0;
-delet_shake=0;
-
-global.editing=0;
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>///Stock file
 if(!file_exists("Levels\Level.sav")){
    var file = file_text_open_write("Levels\Level.sav");
@@ -218,6 +152,81 @@ MenuOffset[Menus-1]=0;
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Editor object
+
+
+
+enitityplace=-1;
+
+gui_surf=-4;
+
+grid_surf=-4;
+
+selected_id=-1;
+w=0; wt=0;
+
+shadow_allow=false;
+
+instance_create(64,340,obj_mario_editor);
+
+state=0;
+enum ControlState { normal, erase, searching }
+
+VX=0;
+VY=obj_controller.Window_H;
+
+EntitySelected=-4;
+
+Placing=0;
+Dragging=0;
+
+LatestEntity=-4;
+
+Drag_id=-4;
+
+//Level attributes
+World=0;
+Time=0;
+Scroll=0; //Includes scrollspeed too
+ClearCond=0;
+
+infostring="";
+infoalpha=0;
+
+//Undo and redo variables
+temp_index=-1;
+
+undo_time=-1;
+redo_time=-1;
+delet_time=-1;
+delet_pos=0;
+delet_shake=0;
+
+//Set if the controller is editing
+global.editing=0;
+
+
+savebot_open=0;
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="1" enumb="0">
       <action>
@@ -301,16 +310,7 @@ instance_destroy(obj_mario_shadow);
     }
     
     with(obj_mario_editor){
-        instance_create(x,y,obj_playerparent);
-        obj_camera.x=x;
-       obj_camera.y=y;
-       
-       if(!collision_rectangle(bbox_left+1,bbox_bottom-2,bbox_right-1,room_height,obj_semisolid,0,0)){
-          for(var a=-1; a&lt;2; a++){
-              instance_create(x+16*a,bbox_bottom+9,obj_pinkplatform);
-          }
-       }
-       
+         alarm[0]=1;
     }
 </string>
           </argument>
@@ -335,7 +335,9 @@ instance_destroy(obj_mario_shadow);
           <argument>
             <kind>1</kind>
             <string>///Editor logic
-if(room!=rm_editor){exit;}
+
+
+if(room!=rm_editor || global.closing){exit;}
 
 //Update menu positions
 
@@ -344,7 +346,7 @@ if(room!=rm_editor){exit;}
     MenuOffset[2]=scr_approach(MenuOffset[2],MenuClose[2],0.1);
 
 
-EntitySelected=position_meeting(mouse_x,mouse_y,obj_editor_entity);
+EntitySelected=obj_mousechek.entitycollision;
 
 w=sin(wt*0.1);
 wt++;
@@ -362,7 +364,7 @@ if(state==ControlState.normal){
     view_xview[0]+X-10,view_yview[0]+20-12-Topmenu_height*MenuOffset[0],
     view_xview[0]+X+11,view_yview[0]+20+12-Topmenu_height*MenuOffset[0])){
     
-       if(mouse_check_button_pressed(mb_left)){enitityplace=1; selected_id=a;}
+       if(mouse_check_button_pressed(mb_left)){state=ControlState.normal; enitityplace=1; selected_id=a;}
     
     }    
  }
@@ -376,10 +378,11 @@ if(state==ControlState.normal){
        
        //Get out of the placing state
        enitityplace=0; selected_id=-1;
+       global.editing=0;
        
        
        //Get the entity id
-       var entity = instance_nearest(mouse_x,mouse_y,obj_editor_entity);
+      
        /*
        if(entity.UsesSprite){
           var xoff = sprite_get_xoffset(entity.UsesSprite);
@@ -393,7 +396,7 @@ if(state==ControlState.normal){
        
        
        //Interact with the entity
-       with(entity){
+       with(EntitySelected){
        
             switch(Entity_id){
                    case "Arrow":  Attribute[Attributes.Direction]+=45; with(other){event_user(2);} break;
@@ -403,9 +406,9 @@ if(state==ControlState.normal){
        
        
        
-    }else if(mouse_check_button_pressed(mb_left)){
+    }else if(mouse_check_button_pressed(mb_left)&amp;&amp;(!global.editing)){
     
-        Drag_id=instance_nearest(mouse_x,mouse_y,obj_editor_entity);
+        Drag_id=EntitySelected;
       
     }
  
@@ -438,8 +441,13 @@ if(state==ControlState.normal){
       
  }else{ if(Dragging&gt;=1){event_user(2);} Dragging=0; }
  
+ if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2]+Rightmenu_width*MenuOffset[1],
+ view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
+    if(mouse_check_button_pressed(mb_left)){state=ControlState.erase; global.cursor_angle=0;}
+ }
  
-}else{//Eraser
+ 
+}else if(state==ControlState.erase){//Eraser
 
   if(mouse_check_button(mb_left)){
   
@@ -463,7 +471,7 @@ if(state==ControlState.normal){
      if(EntitySelected){
      
         
-        with(instance_nearest(mouse_x,mouse_y,obj_editor_entity)){ 
+        with(EntitySelected){ 
         
  
          instance_destroy(); 
@@ -484,18 +492,49 @@ if(state==ControlState.normal){
      
      
   }
+  
+  
+  //Rubber
+  if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2]+Rightmenu_width*MenuOffset[1],view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
+  
+   if(mouse_check_button_pressed(mb_left)){state=ControlState.normal; global.cursor_angle=0;}
+
+  }
 
 
 }
  
 //Buttons-------------
- 
-//Rubber
-if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2]+Rightmenu_width*MenuOffset[1],view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
-  
-   if(mouse_check_button_pressed(mb_left)){state=!state global.cursor_angle=0;}
+if(state!=ControlState.searching){
 
+
+//Search
+if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
+   view_xview+view_wview-17-sprite_get_xoffset(spr_magnUI),
+   view_yview+21-sprite_get_yoffset(spr_magnUI)-Topmenu_height*MenuOffset[0],
+   view_xview+view_wview-17+sprite_get_xoffset(spr_magnUI),
+   view_yview+21+sprite_get_yoffset(spr_magnUI)-Topmenu_height*MenuOffset[0]
+   )){
+   
+      //if(mouse_check_button_pressed(mb_left)){ state=ControlState.searching; }
+   
 }
+
+
+//Savebot
+if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
+
+   view_xview+view_wview+Rightmenu_width*MenuOffset[1]+ButtonRight_X[1]-sprite_get_xoffset(ButtonRight_Sprite[1]),
+   view_yview+ButtonRight_Y[1]+Rightmenu_top-sprite_get_yoffset(ButtonRight_Sprite[1]),
+   view_xview+view_wview+Rightmenu_width*MenuOffset[1]+ButtonRight_X[1]+sprite_get_xoffset(ButtonRight_Sprite[1]),
+   view_yview+ButtonRight_Y[1]+Rightmenu_top+sprite_get_yoffset(ButtonRight_Sprite[1])
+   
+   )){
+   
+    if(mouse_check_button_pressed(mb_left)){ savebot_open=!savebot_open; }
+   
+}
+
 
 //Undo
 if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
@@ -613,8 +652,11 @@ if(mouse_check_button_released(mb_left)){
    LatestEntity=-4;
    undo_time=-1;
    redo_time=-1;
+   global.editing=0;
    
 } 
+
+}
 
 //Up
 if(view_yview[view_current]&lt;64){view_yview[view_current]+=8; view_yview[view_current]=64;}
@@ -685,6 +727,7 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
           <argument>
             <kind>1</kind>
             <string>///Redo
+global.saved=1;
   if(file_exists("Temp\TempLevel_"+string(temp_index+1)+".sav")){
 
      //Clear the room
@@ -772,6 +815,7 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
             <string>///Load temp
 
 //Load the current temp file
+global.saved=0;
 
     //Clear the room
     with(obj_editor_entity){instance_destroy();}
@@ -859,6 +903,7 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
             <string>///Save a temp file
 
    temp_index++; 
+   global.saved=0;
           //Data structure method
           var items = instance_number(obj_editor_entity);
    
@@ -942,6 +987,7 @@ temp_index=-1;
     //Data structure method
     infostring="Loaded level";
     infoalpha=2;
+    global.saved=1;
     
     //Clear the room
     with(obj_editor_entity){instance_destroy();}
@@ -998,8 +1044,10 @@ temp_index=-1;
         if(pos==items){
          ds_grid_destroy(levelmap);
         }
+global.saved=1;
         
-event_user(2);
+directory_destroy("Temp");
+temp_index=-1;
 </string>
           </argument>
         </arguments>
@@ -1040,6 +1088,7 @@ if(room==rm_editor){
    
    infostring="Saved level";
    infoalpha=2;
+   global.saved=1;
    
           //Data structure method
           var items = instance_number(obj_editor_entity);
@@ -1096,7 +1145,7 @@ if(room==rm_editor){
           }
     
    
-
+          global.saved=1;
 }
 </string>
           </argument>
@@ -1213,7 +1262,7 @@ global.editing=0;
           <argument>
             <kind>1</kind>
             <string>
-if(room!=rm_editor){exit;}
+if(room!=rm_editor || global.closing){exit;}
 
 
 if(!surface_exists(gui_surf)){
@@ -1342,8 +1391,11 @@ draw_line(display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1]
 //Draw the right buttons
 for(var a=0; a&lt;array_length_1d(ButtonRight_Sprite); a++){
 
-    draw_sprite_ext(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a]+Rightmenu_width*MenuOffset[1],ButtonRight_Y[a]+1+Rightmenu_top,1,1,0,c_black,0.25);
-    draw_sprite(ButtonRight_Sprite[a],0,display_get_gui_width()+ButtonRight_X[a]+Rightmenu_width*MenuOffset[1],ButtonRight_Y[a]+Rightmenu_top);
+    var img=0;
+    if(ButtonRight_Sprite[a]==spr_robotUI){ var img=savebot_open; }
+
+    draw_sprite_ext(ButtonRight_Sprite[a],img,display_get_gui_width()+ButtonRight_X[a]+Rightmenu_width*MenuOffset[1],ButtonRight_Y[a]+1+Rightmenu_top,1,1,0,c_black,0.25);
+    draw_sprite(ButtonRight_Sprite[a],img,display_get_gui_width()+ButtonRight_X[a]+Rightmenu_width*MenuOffset[1],ButtonRight_Y[a]+Rightmenu_top);
     
    
 
@@ -1434,9 +1486,9 @@ for(var a=0; a&lt;array_length_1d(ButtonLeft_Sprite); a++){
 
 //Play
 if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
-   ButtonLeft_X[4]-sprite_get_xoffset(ButtonLeft_Sprite[4]),
+   ButtonLeft_X[4]-sprite_get_xoffset(ButtonLeft_Sprite[4])-Leftmenu_width*MenuOffset[2],
    Leftmenu_top+ButtonLeft_Y[4]-sprite_get_yoffset(ButtonLeft_Sprite[4])-sprite_get_height(spr_playmovie_bar),
-   ButtonLeft_X[4]+sprite_get_xoffset(ButtonLeft_Sprite[4]),
+   ButtonLeft_X[4]+sprite_get_xoffset(ButtonLeft_Sprite[4])-Leftmenu_width*MenuOffset[2],
    Leftmenu_top+ButtonLeft_Y[4]+sprite_get_yoffset(ButtonLeft_Sprite[4]) )
 
 ){
@@ -1448,8 +1500,9 @@ if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
 
 surface_reset_target();
 
-
-if(surface_exists(gui_surf)){draw_surface(gui_surf,0,0);}
+if(state!=ControlState.searching){
+ if(surface_exists(gui_surf)){draw_surface(gui_surf,0,0);}
+}
 
 
 //Reset rocket circle
@@ -1472,11 +1525,12 @@ draw_set_font(fnt_mario); draw_set_valign(fa_top); draw_set_alpha(1);
 }
 
 draw_set_colour(c_black); draw_set_halign(fa_left);
-draw_text_transformed(5,80,"Press ENTER to play#Press Z to save#Press X to load",0.5,0.5,0);
+draw_text_transformed(45,display_get_gui_height()-30,"Press ENTER to play#Press Z to save#Press X to load",0.5,0.5,0);
 
-infoalpha=scr_approach(infoalpha,0,0.2);
+//infoalpha=scr_approach(infoalpha,0,0.2);
 
-draw_text_transformed(5,display_get_gui_height()-20,Dragging,0.5,0.5,0);
+//draw_text_transformed(5,display_get_gui_height()-20,string(obj_mousechek.entitycollision)+" / "+string(Drag_id)+" / "+string(global.editing)
+//,0.5,0.5,0);
 
 draw_set_colour(c_white);
 
@@ -1503,7 +1557,7 @@ draw_set_colour(c_white);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if(room!=rm_editor){exit;}
+            <string>if(room!=rm_editor ){exit;}
 
 
 depth=6;
@@ -1513,6 +1567,7 @@ draw_background(background0,view_xview-view_xview/10,room_height-background_get_
 var tabheight=36;
 var tabwidth=33;
 
+if(!global.closing){
 
 //Draw the grid
 if(!surface_exists(grid_surf)){
@@ -1651,6 +1706,8 @@ if(state==ControlState.normal){
    global.cursor=spr_eraser;
 
 }
+
+}else{ global.cursor=spr_cursor; }
 </string>
           </argument>
         </arguments>

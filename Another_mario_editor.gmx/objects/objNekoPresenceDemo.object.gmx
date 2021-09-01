@@ -25,85 +25,19 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>Leftmenu_top=37;
-Leftmenu_width=55;
-ButtonLeft_Sprite[0]=spr_playmovie_base;
-ButtonLeft_X[0]=24;
-ButtonLeft_Y[0]=164;
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="7" enumb="4">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string></string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="8" enumb="64">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>draw_set_colour(c_black);
-draw_text_transformed(45,display_get_gui_height()-30,"Press ENTER#to go back",0.5,0.5,0);
-draw_set_colour(c_white);
+            <string>///Initialize Discord.
 
-
-draw_sprite_ext(ButtonLeft_Sprite[0],0,ButtonLeft_X[0],ButtonLeft_Y[0]+1+Leftmenu_top,1,1,0,c_black,0.25);
-    draw_sprite(ButtonLeft_Sprite[0],0,ButtonLeft_X[0],ButtonLeft_Y[0]+Leftmenu_top);
-    
-draw_sprite(spr_playmovie_bar,0,ButtonLeft_X[0]-sprite_get_xoffset(ButtonLeft_Sprite[0]),
-          ButtonLeft_Y[0]+Leftmenu_top-sprite_get_yoffset(ButtonLeft_Sprite[0]));
-          
-//Play
-if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
-   ButtonLeft_X[0]-sprite_get_xoffset(ButtonLeft_Sprite[0]),
-   Leftmenu_top+ButtonLeft_Y[0]-sprite_get_yoffset(ButtonLeft_Sprite[0])-sprite_get_height(spr_playmovie_bar),
-   ButtonLeft_X[0]+sprite_get_xoffset(ButtonLeft_Sprite[0]),
-   Leftmenu_top+ButtonLeft_Y[0]+sprite_get_yoffset(ButtonLeft_Sprite[0]) )
-
-){
-  if(mouse_check_button_pressed(mb_left)){
-     with(obj_editor_controller){event_perform(ev_keypress, vk_enter);}
-  }
+ready = false;
+if (!np_initdiscord("715161153319206912", true, np_steam_app_id_empty))
+{
+    show_error("NekoPresence init fail.", true);
 }
-
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -120,9 +54,101 @@ if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>depth=6;
-draw_background(background0,view_xview-view_xview/10,room_height-background_get_height(background0));
+            <string>///Update NekoPresence so async events will execute.
 
+np_update();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="70">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// @description Capture async events from NekoPresence.
+
+var ev_type = async_load[? "event_type"];
+
+if (ev_type == "DiscordReady")
+{
+    window_set_caption("We're ready!");
+    ready = true;
+    show_debug_message("date: " + string(date_current_datetime()));
+    np_setpresence_timestamps(date_current_datetime(), 0, false);
+    np_setpresence_more("Small image text", "Large image text", false);
+    
+    //np_setpresence() should ALWAYS come the last!!
+    np_setpresence("this is a state", "this is some details", "astraicon", "");
+    
+    // passing a URL will add this sprite asynchronously via *internets*
+    sprite_add(np_get_avatar_url(async_load[? "user_id"], async_load[? "avatar"]), 1, false, false, 0, 0);
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="60">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// @description check if we can use the avatar.
+
+if (async_load[? "status"] &gt;= 0) {
+    sprite_index = async_load[? "id"];
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="27">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///quit
+
+game_end();
 </string>
           </argument>
         </arguments>
