@@ -48,7 +48,11 @@
     <extension index="1">extensions\NekoPresence</extension>
     <extension index="2">extensions\window_command_hook</extension>
   </NewExtensions>
-  <sounds name="sound"/>
+  <sounds name="sound">
+    <sound>sound\snd_coursebot</sound>
+    <sound>sound\snd_ground_maker</sound>
+    <sound>sound\snd_ground</sound>
+  </sounds>
   <sprites name="sprites">
     <sprites name="Collision">
       <sprite>sprites\spr_semisolid</sprite>
@@ -93,6 +97,7 @@
         <sprite>sprites\spr_arrow_icon</sprite>
         <sprite>sprites\spr_bridge_icon</sprite>
       </sprites>
+      <sprite>sprites\spr_nothumbnail</sprite>
     </sprites>
     <sprites name="In game">
       <sprites name="Blue">
@@ -153,15 +158,20 @@
     <script>scripts\draw_pie.gml</script>
     <script>scripts\window_command_toggle.gml</script>
     <script>scripts\scr_draw_message.gml</script>
+    <script>scripts\unix_timestamp.gml</script>
+    <scripts name="Level">
+      <script>scripts\scr_save_level.gml</script>
+    </scripts>
   </scripts>
   <fonts name="fonts">
+    <font>fonts\fnt_mario_big</font>
     <font>fonts\fnt_mario</font>
     <font>fonts\fnt_hd</font>
   </fonts>
   <objects name="objects">
     <object>objects\obj_mousechek</object>
     <object>objects\obj_controller</object>
-    <object>objects\oGridBufferTest</object>
+    <object>objects\obj_levelselect_controller</object>
     <objects name="Collision">
       <object>objects\obj_semisolid</object>
       <object>objects\obj_slope_l</object>
@@ -214,10 +224,10 @@
     <objects name="Effects">
       <object>objects\obj_ring_effect</object>
     </objects>
-    <object>objects\objNekoPresenceDemo</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_init</room>
+    <room>rooms\rm_levelselect</room>
     <room>rooms\rm_editor</room>
     <room>rooms\rm_ingame</room>
     <room>rooms\rmGridBuffer</room>

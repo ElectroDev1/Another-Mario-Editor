@@ -26,11 +26,11 @@
           <argument>
             <kind>1</kind>
             <string>///Stock file
-if(!file_exists("Levels\Level.sav")){
+/*if(!file_exists("Levels\Level.sav")){
    var file = file_text_open_write("Levels\Level.sav");
        file_text_write_string(file, string(0));
    file_text_close(file);
-}
+}*/
 //Get the ds grid
 
    //Data structure method
@@ -170,7 +170,7 @@ MenuOffset[Menus-1]=0;
             <kind>1</kind>
             <string>///Editor object
 
-
+global.draweditor=1;
 
 enitityplace=-1;
 
@@ -223,6 +223,9 @@ global.editing=0;
 
 
 savebot_open=0;
+
+
+
 </string>
           </argument>
         </arguments>
@@ -317,6 +320,29 @@ instance_destroy(obj_mario_shadow);
         </arguments>
       </action>
     </event>
+    <event eventtype="3" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if(savebot_open){global.closing=2;}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -336,8 +362,14 @@ instance_destroy(obj_mario_shadow);
             <kind>1</kind>
             <string>///Editor logic
 
+with(obj_controller){ if(idling&lt;3700){idling++;} }
+
 
 if(room!=rm_editor || global.closing){exit;}
+
+global.state="In the editor";
+global.details="Editing level '"+string(global.level_filename)+"'";
+global.icon="rpc_edit";
 
 //Update menu positions
 
@@ -364,7 +396,7 @@ if(state==ControlState.normal){
     view_xview[0]+X-10,view_yview[0]+20-12-Topmenu_height*MenuOffset[0],
     view_xview[0]+X+11,view_yview[0]+20+12-Topmenu_height*MenuOffset[0])){
     
-       if(mouse_check_button_pressed(mb_left)){state=ControlState.normal; enitityplace=1; selected_id=a;}
+       if(mouse_check_button_pressed(mb_left)){with(obj_controller){ idling=0; } state=ControlState.normal; enitityplace=1; selected_id=a;}
     
     }    
  }
@@ -443,7 +475,7 @@ if(state==ControlState.normal){
  
  if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2]+Rightmenu_width*MenuOffset[1],
  view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
-    if(mouse_check_button_pressed(mb_left)){state=ControlState.erase; global.cursor_angle=0;}
+    if(mouse_check_button_pressed(mb_left)){with(obj_controller){ idling=0; } state=ControlState.erase; global.cursor_angle=0;}
  }
  
  
@@ -452,6 +484,7 @@ if(state==ControlState.normal){
   if(mouse_check_button(mb_left)){
   
      global.cursor_angle=45;
+     with(obj_controller){ idling=0; }
      
      if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),obj_mario_editor.bbox_left,obj_mario_editor.bbox_top,obj_mario_editor.bbox_right,obj_mario_editor.bbox_bottom)){
         with(obj_mario_editor){
@@ -497,7 +530,7 @@ if(state==ControlState.normal){
   //Rubber
   if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2]+Rightmenu_width*MenuOffset[1],view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
   
-   if(mouse_check_button_pressed(mb_left)){state=ControlState.normal; global.cursor_angle=0;}
+   if(mouse_check_button_pressed(mb_left)){with(obj_controller){ idling=0; } state=ControlState.normal; global.cursor_angle=0;}
 
   }
 
@@ -531,7 +564,7 @@ if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
    
    )){
    
-    if(mouse_check_button_pressed(mb_left)){ savebot_open=!savebot_open; }
+    if(mouse_check_button_pressed(mb_left)){with(obj_controller){ idling=0; } enitityplace=0; selected_id=-1;  global.closing=2; }
    
 }
 
@@ -566,7 +599,7 @@ if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
    
    )){
   
-   if(mouse_check_button_pressed(mb_left)&amp;&amp;(!instance_exists(obj_reset_rocket))){ redo_time=0; } 
+   if(mouse_check_button_pressed(mb_left)&amp;&amp;(!instance_exists(obj_reset_rocket))){ with(obj_controller){ idling=0; } redo_time=0; } 
 
   if(mouse_check_button(mb_left) &amp;&amp; (redo_time&gt;=0)){
       if(redo_time&lt;1.05){redo_time+=0.025;}else{ event_user(4); redo_time=-1; }
@@ -587,7 +620,7 @@ if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
    
    )){
   
-   if(mouse_check_button_pressed(mb_left)&amp;&amp;(!instance_exists(obj_reset_rocket))){ delet_time=0; } 
+   if(mouse_check_button_pressed(mb_left)&amp;&amp;(!instance_exists(obj_reset_rocket))){ with(obj_controller){ idling=0; } delet_time=0; } 
 
    
    
@@ -626,6 +659,7 @@ if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
    )){
    
    if(mouse_check_button_pressed(mb_left)){
+      with(obj_controller){ idling=0; }
       shadow_allow=!shadow_allow;
    }
    
@@ -653,6 +687,7 @@ if(mouse_check_button_released(mb_left)){
    undo_time=-1;
    redo_time=-1;
    global.editing=0;
+   with(obj_controller){ idling=0; }
    
 } 
 
@@ -727,6 +762,7 @@ with(obj_mario_editor){ x = xstart; y = ystart; }
           <argument>
             <kind>1</kind>
             <string>///Redo
+with(obj_controller){ idling=0; }
 global.saved=1;
   if(file_exists("Temp\TempLevel_"+string(temp_index+1)+".sav")){
 
@@ -813,7 +849,7 @@ global.saved=1;
           <argument>
             <kind>1</kind>
             <string>///Load temp
-
+with(obj_controller){ idling=0; }
 //Load the current temp file
 global.saved=0;
 
@@ -901,7 +937,7 @@ global.saved=0;
           <argument>
             <kind>1</kind>
             <string>///Save a temp file
-
+with(obj_controller){ idling=0; }
    temp_index++; 
    global.saved=0;
           //Data structure method
@@ -981,6 +1017,7 @@ global.saved=0;
           <argument>
             <kind>1</kind>
             <string>///Load levels
+with(obj_controller){ idling=0; }
 directory_destroy("Temp");
 temp_index=-1;
 
@@ -993,7 +1030,7 @@ temp_index=-1;
     with(obj_editor_entity){instance_destroy();}
     
     //Get the ds grid
-    var file = file_text_open_read("Levels\Level.sav");
+    var file = file_text_open_read("Levels\"+string(global.level_filename));
     
         var items = real(file_text_read_string(file));
         
@@ -1086,6 +1123,17 @@ if(room==rm_editor){
    We also save the level attributes at the start
    */
    
+   global.draweditor=0;
+   var desprite=sprite_create_from_surface(application_surface,0,0,
+   surface_get_width(application_surface),surface_get_height(application_surface),
+   0,0,0,0);
+   
+   sprite_save(desprite,0,"Levels\Level images\"+string(global.level_filename)+".png");
+   
+   sprite_delete(desprite);
+   global.draweditor=1;
+   
+   with(obj_controller){ idling=0; }
    infostring="Saved level";
    infoalpha=2;
    global.saved=1;
@@ -1130,7 +1178,7 @@ if(room==rm_editor){
           var buffer = /*ds_grid_write_buffer(levelmap);*/ds_grid_write(levelmap);
    
           //Store the buffer in a file
-          var file = file_text_open_write("Levels\Level.sav");
+          var file = file_text_open_write("Levels\"+string(global.level_filename)+".sav");
           
               file_text_write_string(file, string(items));
               
@@ -1192,7 +1240,15 @@ if(room==rm_editor){
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>enitityplace=-1;
+            <string>
+
+
+if(file_exists(working_directory+"\Levels\"+global.level_filename)){
+   event_user(1);
+}
+
+
+enitityplace=-1;
 
 gui_surf=-4;
 
@@ -1202,7 +1258,7 @@ selected_id=-1;
 
 state=0;
 
-if !view_enabled {
+if (!view_enabled)&amp;&amp;(room==rm_editor || room==rm_ingame) {
 
 
    view_visible[0]=true;
@@ -1316,7 +1372,7 @@ if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
 halfX-6,Topmenu_height-Topmenu_height*MenuOffset[0],
 halfX+6,Topmenu_height-Topmenu_height*MenuOffset[0]+4)){
 
-   if(mouse_check_button_pressed(mb_left)){  MenuClose[0]=!MenuClose[0]; }
+   if(mouse_check_button_pressed(mb_left)){ with(obj_controller){ idling=0; }  MenuClose[0]=!MenuClose[0]; }
 
 }
 
@@ -1368,7 +1424,7 @@ if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
 display_get_gui_width()-Rightmenu_width-6+Rightmenu_width*MenuOffset[1],halfY-6,
 display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1],halfY+6)){
 
-   if(mouse_check_button_pressed(mb_left)){ enitityplace=0; selected_id=-1; MenuClose[1]=!MenuClose[1]; }
+   if(mouse_check_button_pressed(mb_left)){ with(obj_controller){ idling=0; } enitityplace=0; selected_id=-1; MenuClose[1]=!MenuClose[1]; }
 
 }
 
@@ -1442,7 +1498,7 @@ draw_rectangle(Leftmenu_width-Leftmenu_width*MenuOffset[2],halfY-6,Leftmenu_widt
 if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
 Leftmenu_width-Leftmenu_width*MenuOffset[2],halfY-6,Leftmenu_width-Leftmenu_width*MenuOffset[2]+4,halfY+6
 )){
-   if(mouse_check_button_pressed(mb_left)){  MenuClose[2]=!MenuClose[2]; }
+   if(mouse_check_button_pressed(mb_left)){ with(obj_controller){ idling=0; }  MenuClose[2]=!MenuClose[2]; }
 }
 
 
@@ -1493,6 +1549,7 @@ if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
 
 ){
   if(mouse_check_button_pressed(mb_left)){
+     with(obj_controller){ idling=0; }
      event_perform(ev_keypress, vk_enter);
   }
 }
@@ -1525,7 +1582,6 @@ draw_set_font(fnt_mario); draw_set_valign(fa_top); draw_set_alpha(1);
 }
 
 draw_set_colour(c_black); draw_set_halign(fa_left);
-draw_text_transformed(45,display_get_gui_height()-30,"Press ENTER to play#Press Z to save#Press X to load",0.5,0.5,0);
 
 //infoalpha=scr_approach(infoalpha,0,0.2);
 
@@ -1557,7 +1613,7 @@ draw_set_colour(c_white);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if(room!=rm_editor ){exit;}
+            <string>if(room!=rm_editor){exit;}
 
 
 depth=6;
@@ -1606,7 +1662,7 @@ if(!surface_exists(grid_surf)){
    
    surface_reset_target();
    
-   draw_surface(grid_surf,0,0);
+   if(global.draweditor){draw_surface(grid_surf,0,0);}
 
 }
 
@@ -1713,52 +1769,6 @@ if(state==ControlState.normal){
         </arguments>
       </action>
     </event>
-    <event eventtype="9" enumb="90">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>event_user(0);
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="88">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>event_user(1);
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
     <event eventtype="9" enumb="13">
       <action>
         <libid>1</libid>
@@ -1780,6 +1790,9 @@ if(state==ControlState.normal){
 
 if(room==rm_editor){
         
+    audio_sound_gain(global.makersong,0,0);
+    audio_sound_gain(global.playsong,1,0);
+
     global.switchstate=0;
     room_set_width(rm_ingame, room_width);
     room_set_height(rm_ingame,room_height);
@@ -1791,6 +1804,9 @@ if(room==rm_editor){
 
 }
 else if(room==rm_ingame){
+
+    audio_sound_gain(global.makersong,1,0);
+    audio_sound_gain(global.playsong,0,0);
 
     VX=view_xview;
     VY=view_yview;

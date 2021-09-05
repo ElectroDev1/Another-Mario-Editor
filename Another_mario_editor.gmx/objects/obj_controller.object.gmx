@@ -25,7 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>global.debug=0;
+            <string>///AME controller
+
+global.debug=0;
 window_command_hook(window_command_close);
 //window_set_background_redraw(true);
 
@@ -91,6 +93,33 @@ global.switchstate=0;
 global.closing=0;
 global.saved=1;
 screensprite=-4;
+
+//Discord
+unix=unix_timestamp();
+global.state="In";
+global.details="doing";
+global.icon="rpc_logo";
+global.small_icon="";
+
+global.icon_text="text";
+global.small_icon_text="small text";
+
+idling=60;
+
+//Level save stuff
+global.level_filename="";
+
+global.level_index=0;
+global.new_filename="Level";
+onquestion=0;
+
+msg_var=0;
+ques_var=0;
+
+global.getstring_cont="saveas";
+
+fade_alpha=0;
+fade=0;
 </string>
           </argument>
         </arguments>
@@ -219,6 +248,57 @@ global.selected_entity[9]="Bridge";/*global.selected_entity[10]="Firebar";*/
         </arguments>
       </action>
     </event>
+    <event eventtype="2" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>instance_destroy(obj_entity_parent);
+global.closing=0; 
+audio_stop_all();
+room_goto(rm_levelselect);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string> with(obj_editor_controller){savebot_open=0;} 
+global.draweditor=1;
+global.closing=0;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="2" enumb="0">
       <action>
         <libid>1</libid>
@@ -259,7 +339,9 @@ global.selected_entity[9]="Bridge";/*global.selected_entity[10]="Firebar";*/
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Get if we're trying to close the game
+            <string>///Controller logic
+
+//Get if we're trying to close the game
 if (window_command_check(window_command_close)) { 
 
     show_debug_message("Close attempted"); 
@@ -270,7 +352,7 @@ if (window_command_check(window_command_close)) {
      
    if(!global.saved){
    
-    if(!global.closing){
+    if(global.closing!=1){
       global.closing=1;
     }
       
@@ -282,12 +364,39 @@ if (window_command_check(window_command_close)) {
     
     
 }
+
+//Discord RPC
+//Rich presence setup
+np_initdiscord("883736895568375829",0,0);
+
+//Set time
+np_setpresence_timestamps(unix,0,1);
+
+//Set profile status
+np_setpresence(global.state,global.details,global.icon,global.small_icon);
+
+np_setpresence_more(global.small_icon_text,global.icon_text,0);
+
+np_update();
+
+
+if(idling&gt;=3600/2){ global.small_icon="rpc_idling"; }else{global.small_icon="rpc_logo"; }
+
+//Set text
+switch(global.icon){
+        default: global.icon_text="Another Mario Editor"; break;
+} 
+
+switch(global.small_icon){
+        default: global.small_icon_text=""; break;
+        case "rpc_idling": global.small_icon_text="Idling"; break;
+} 
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="5" enumb="18">
+    <event eventtype="5" enumb="17">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -319,6 +428,109 @@ for(var a=0; a&lt;=5; a++){
 if(keyboard_check_pressed(vk_f5)){
    game_end();
 }
+
+if(keyboard_check_pressed(ord("R"))){
+   game_restart();
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="63">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//Get the name typed
+var i_d = ds_map_find_value(async_load, "id");
+ if i_d == msg_var
+    {
+    if ds_map_find_value(async_load, "status")
+       {
+       if ds_map_find_value(async_load, "result") != ""
+          {
+            var res=ds_map_find_value(async_load, "result");
+            
+            global.new_filename=res;
+            
+            global.closing=2;
+            //Go through the saved levels and see if one is already called like it
+            var file=file_find_first(working_directory + "\Levels\*.sav",fa_directory);
+            
+            while(file!=''){
+            
+                  if(global.new_filename+string(".sav")==file){
+                  
+                     global.closing=2;
+                     show_debug_message("File with equal file name found");
+                      with(obj_editor_controller){savebot_open=1;} 
+                     break;
+                  }
+            
+                  file=file_find_next();
+            }
+            
+            if(!file_exists(working_directory + "\Levels\"+file)){
+                
+                
+            
+                event_user(1);}
+            
+            
+          }
+       }else{ show_debug_message("Closed typing window"); onquestion=0; }
+       
+
+    }
+    
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Save this file
+if(global.getstring_cont=="saveas"){
+    room_goto(rm_editor);
+}
+
+global.closing=2;
+global.draweditor=0;
+onquestion=0;
+global.level_filename=global.new_filename+".sav";
+with(obj_editor_controller){scr_save_level();}
+
+alarm[1]=2;
 
 </string>
           </argument>
@@ -376,6 +588,8 @@ alarm[0]=1;
           <argument>
             <kind>1</kind>
             <string>show_debug_message("Went to room "+string(room_get_name(room)));
+idling=0;
+fade=0;
 </string>
           </argument>
         </arguments>
@@ -398,7 +612,17 @@ alarm[0]=1;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string> var file=file_text_open_write("Settings.dat");
+            <string>/*var file=file_text_open_write("Level list.dat");
+   
+    for(var a=0; a&lt;60; a++){
+        file_text_write_string(file,string(global.levelname[a]));
+        file_text_writeln(file);
+    }
+
+file_text_close(file);*/
+ 
+  
+    var file=file_text_open_write("Settings.dat");
    
    
    file_text_write_string(file,string(Window_S));
@@ -436,7 +660,141 @@ directory_destroy("Temp");
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>
+            <string>//Get the number of levels saved
+/*
+A lot of the code was for a method that would not rely on how files are ordered by the computer
+but I can't seem to figure it out rn
+*/
+
+global.level_numb=0;
+global.levelname[60]="";
+
+//Get level number
+var levelfile=file_find_first(working_directory+"\Levels\*.sav",fa_directory);
+var i=0;
+
+while(levelfile!=''){
+
+    global.level_numb++;
+    global.levelname[i]=levelfile;
+    show_debug_message("Found level "+string(global.levelname[i]));
+    i++;
+    levelfile=file_find_next();
+    
+}
+
+show_debug_message("Found "+string(global.level_numb)+" levels");
+
+
+/*if(file_exists("Level list.dat")){
+  
+   //Put the level names and images on a list based on the level list file 
+   var file=file_text_open_read("Level list.dat");
+
+
+   for(var a=0; a&lt;60; a++){
+   
+       var Fname=file_text_read_string(file);
+         
+       if(file_exists(working_directory+"\Levels\"+Fname)){
+          global.levelname[a]=Fname;
+          show_debug_message("Found level "+string(global.levelname[a]));
+       
+       
+          if(file_exists(working_directory+"\Levels\Level images\"+
+          string_delete(Fname,string_width(Fname)-3,4)+".png")){
+         
+             global.levelsprite[a]=sprite_add(working_directory+"\Levels\Level images\"+string_delete(Fname,string_width(Fname)-3,4)+".png",0,0,0,0,0);
+             
+             show_debug_message("Found image "+string(working_directory+"\Levels\Level images\"+string_delete(Fname,string_width(Fname)-3,4)+".png"));
+       
+          }
+          else{
+    
+             global.levelsprite[a]=spr_nothumbnail; 
+    
+          }
+       
+       }
+         
+       file_text_readln(file);
+   }   
+     
+
+
+   file_text_close(file);*/
+
+
+/*var levelfile=file_find_first(working_directory+"\Levels\*.sav",fa_directory);
+while(levelfile!=''){
+
+     for(var a=0; a&lt;global.level_numb; a++){
+         var Fname=file_text_read_string(file);
+         
+         if(Fname==levelfile){
+            global.levelname[a]=levelfile;
+            show_debug_message("Found level "+string(levelfile));  
+            
+            //Set image
+            if(file_exists(working_directory+"\Levels\Level images\"+
+            string_delete(levelfile,string_length(levelfile)-3,4)+".png")){
+      
+                   global.levelsprite[a]=sprite_add(working_directory+"\Levels\Level images\"+string_delete(levelfile,string_length(levelfile)-3,4)+".png",0,0,0,0,0);
+    
+            }else{
+    
+                   global.levelsprite[a]=spr_nothumbnail; 
+    
+            }
+            
+         }
+         
+         file_text_readln(file);
+     }   
+     levelfile=file_find_next();
+}*/
+
+
+
+
+
+
+
+//}
+
+var levelfile=file_find_first(working_directory+"\Levels\*.sav",fa_directory);
+var i=0;
+while(levelfile!=''){
+
+    if(file_exists(working_directory+"\Levels\Level images\"+
+    string_delete(levelfile,string_length(levelfile)-3,4)+".png")){
+      
+      global.levelsprite[i]=sprite_add(working_directory+"\Levels\Level images\"+string_delete(levelfile,string_length(levelfile)-3,4)+".png",0,0,0,0,0);
+    
+    }else{
+    
+      global.levelsprite[i]=spr_nothumbnail; 
+    
+    }
+
+    show_debug_message("Found image "+string(string_delete(levelfile,string_length(levelfile)-3,4)+".png"));
+    levelfile=file_find_next();
+    i++;
+    
+}
+
+
+/*var levelfile=file_find_first(working_directory+"\Levels\*.sav",fa_directory);
+for(var a=0; a&lt;3; a++){
+   
+     show_debug_message(levelfile);
+     levelfile=file_find_next()
+}*/
+
+
+
+
+
 if(file_exists("Settings.dat")){
    
    var file=file_text_open_read("Settings.dat");
@@ -465,9 +823,11 @@ if(file_exists("Settings.dat")){
 
 }
 
+
+
 event_user(0);
 
-room_goto_next();
+room_goto(rm_levelselect);
 </string>
           </argument>
         </arguments>
@@ -517,7 +877,10 @@ draw_set_blend_mode(bm_normal);
             <kind>1</kind>
             <string>
 //Closing menu
-if(global.closing){
+draw_set_font(fnt_mario);
+switch(global.closing){
+
+  case 1:
 
    var T = scr_draw_message(display_get_gui_width(),display_get_gui_height(),
    "The level wasn't saved!#Would you like to save?","Save","Don't save","Cancel");
@@ -525,24 +888,100 @@ if(global.closing){
    switch(T){
     
        case 1: with(obj_editor_controller){event_user(0);} game_end(); break;
+       
+       
        case 2: game_end(); break;
        case 3: global.closing=0; break;
    
    }
+
+  break;
+  
+  case 2:
+
+    if(!obj_editor_controller.savebot_open){
+  
+   var T = scr_draw_message(display_get_gui_width(),display_get_gui_height(),
+   "Memobot","Save","Save as","Open","Cancel");
+   
+   if(!onquestion){
+   
+    switch(T){
+    
+       case 1: 
+       
+               if(file_exists(working_directory+"\Levels\"+string(global.level_filename))){
+                   with(obj_editor_controller){scr_save_level();} 
+                   global.level_numb++;
+                    with(obj_editor_controller){savebot_open=0;}  global.closing=0;
+               }else{
+                   onquestion=1; msg_var=get_string_async("Type the level name","Level"); 
+                   //We use a get string cause god I don't want to make a custom typer it's pain
+               }
+       
+       
+               
+       
+       break;
+       
+       
+       
+       case 2: onquestion=1; msg_var=get_string_async("Type the level name","Level"); break;
+       case 3: onquestion=1; fade=1; alarm[2]=30;break;
+       case 4:   with(obj_editor_controller){savebot_open=0;} global.closing=0; break;
+   
+    }
+   
+   }
+   
+   }else{
+   
+     var T=scr_draw_message(display_get_gui_width(),display_get_gui_height(),
+           "File with this name already exists, do#you want to replace it?#You won't be able to recover it","Yes","No");
+           
+           switch(T){
+           
+                 case 1:
+                 show_debug_message("Replaced file");
+                 event_user(1);
+                 break;
+                 
+                 case 2:
+                 show_debug_message("No file replaced");
+                 global.closing=0; 
+                 with(obj_editor_controller){savebot_open=0;} 
+                 onquestion=0;
+                 break;
+           
+           }
+   
+   }
+
+  break;
 
 }
 
 draw_set_halign(fa_left); draw_set_valign(fa_top);
 draw_set_colour(c_black);
 draw_text_transformed(2,2,
-"FPS:"+string(fps)+"#Room W:"+string(room_width)+"#View X:"+string(view_xview)
-,0.5,0.5,0);
+
+"FPS:"+string(fps)+"#Room W:"+string(room_width)+"#View X:"+string(view_xview)+"#Idle:"+string(idling)+
+"#File:"+string(string_delete(global.level_filename,string_length(global.level_filename)-3,4)+"/"+
+string(global.level_numb))
+
+,0.25,0.25,0);
 draw_set_colour(c_white);
 
 depth=-10;
 draw_sprite_ext(global.cursor,0,device_mouse_x_to_gui(0)+8,device_mouse_y_to_gui(0)+8,
 0.2,0.2,global.cursor_angle,c_white,1);
 
+
+fade_alpha=scr_approach(fade_alpha,fade,0.1);
+draw_set_alpha(fade_alpha);
+draw_set_colour(c_black);
+draw_rectangle(0,0,display_get_gui_width(),display_get_gui_height(),0);
+draw_set_alpha(1);
 </string>
           </argument>
         </arguments>

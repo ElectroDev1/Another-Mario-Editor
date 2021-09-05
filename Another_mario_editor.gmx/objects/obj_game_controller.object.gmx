@@ -35,6 +35,32 @@ ButtonLeft_Y[0]=164;
         </arguments>
       </action>
     </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>global.state="Testing level 'Level'";
+global.details="";
+global.icon="rpc_test";
+with(obj_controller){idling=0;}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="4">
       <action>
         <libid>1</libid>
@@ -75,7 +101,7 @@ ButtonLeft_Y[0]=164;
           <argument>
             <kind>1</kind>
             <string>draw_set_colour(c_black);
-draw_text_transformed(45,display_get_gui_height()-30,"Press ENTER#to go back",0.5,0.5,0);
+draw_text_transformed(45,display_get_gui_height()-30,"Press ENTER#to go back",0.25,0.25,0);
 draw_set_colour(c_white);
 
 

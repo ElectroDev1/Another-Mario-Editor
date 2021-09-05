@@ -73,11 +73,20 @@ draw_text_transformed(X/2,Y/2-messageheight/2+messagepadding,message,0.5,0.5,0);
 //Draw the buttons
 draw_set_valign(fa_middle);
 
-var offs=0;
+if(array_length_1d(arr)>2){ 
+
+ var offs=string_width(arr[0])/4 + (Right-Left)/(array_length_1d(arr)/2+0.75) +buttonpadding*2;
+ 
+}else{
+
+  var offs=string_width(arr[0])/4 + (Right-Left)/2 +buttonpadding*2;
+
+}
+
 for(var a=0; a<array_length_1d(arr); a++){
-    if(a>0){offs+=string_width(arr[a-1])/4+string_width(arr[a])/4+buttonpadding*3-2;}
+    if(a>0){offs+=string_width(arr[a-1])/4+string_width(arr[a])/4+buttonpadding*3;}
     
-    var MX=X/2+offs-messagewidth/3-buttonpadding*2;
+    var MX=offs//-messagewidth/( max(array_length_1d(arr)+1,1)/2)+buttonpadding;
     var MY=Bottom-messagepadding-buttonpadding;
     
     draw_set_colour(c_white);
