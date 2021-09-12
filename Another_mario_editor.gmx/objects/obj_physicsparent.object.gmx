@@ -27,9 +27,9 @@
             <kind>1</kind>
             <string>
 Vsp=0;
-grav_O=0.7;
+grav_O=0.3;
 grav=grav_O;
-maxVsp=10;
+maxVsp=6;
 offset=0;
 
 spd=0;
@@ -86,7 +86,7 @@ if(Vsp&gt;=0){
     
         if(bbox_bottom&lt;Semi.y+2){
            
-           y=Semi.bbox_top-(sprite_get_height(mask_index)-(sprite_yoffset*image_yscale))
+           y=Semi.bbox_top-sprite_yoffset
            Vsp=0;
            event_user(0);
            grav=0;

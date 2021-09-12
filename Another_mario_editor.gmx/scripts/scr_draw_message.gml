@@ -86,8 +86,8 @@ if(array_length_1d(arr)>2){
 for(var a=0; a<array_length_1d(arr); a++){
     if(a>0){offs+=string_width(arr[a-1])/4+string_width(arr[a])/4+buttonpadding*3;}
     
-    var MX=offs//-messagewidth/( max(array_length_1d(arr)+1,1)/2)+buttonpadding;
-    var MY=Bottom-messagepadding-buttonpadding;
+    var MX=offs+2//-messagewidth/( max(array_length_1d(arr)+1,1)/2)+buttonpadding;
+    var MY=Bottom-messagepadding-buttonpadding+1;
     
     draw_set_colour(c_white);
     draw_rectangle(

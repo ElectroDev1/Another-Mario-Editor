@@ -160,6 +160,14 @@ if(coin){
 
 }
 
+switch(item){
+       
+       default:
+          obj_game_controller.Coins++;
+       break;
+
+}
+
 offsetT=-8;
 alarm[0]=10;
 </string>

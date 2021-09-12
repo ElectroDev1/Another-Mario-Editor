@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>///Variables
+global.loaded=0;
 
 music=audio_play_sound(snd_coursebot,0,1);
 audio_sound_gain(music,0.75,0);

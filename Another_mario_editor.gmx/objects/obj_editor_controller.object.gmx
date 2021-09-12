@@ -170,6 +170,8 @@ MenuOffset[Menus-1]=0;
             <kind>1</kind>
             <string>///Editor object
 
+global.loaded=0;
+
 global.draweditor=1;
 
 enitityplace=-1;
@@ -303,6 +305,10 @@ instance_destroy(obj_mario_shadow);
                 
                 case obj_bridge :
                       child.image_xscale=Attribute[Attributes.Width];
+                break;
+                
+                case obj_spring :
+                      child.x+=8;
                 break;
          
          }
@@ -851,6 +857,7 @@ global.saved=1;
             <string>///Load temp
 with(obj_controller){ idling=0; }
 //Load the current temp file
+if(temp_index&gt;-1){
 global.saved=0;
 
     //Clear the room
@@ -911,6 +918,7 @@ global.saved=0;
         }
         
   }
+}
         
          if(temp_index&gt;-1){temp_index--;}
         //file_delete("Temp\TempLevel_"+string(temp_index)+".sav");
@@ -1243,8 +1251,9 @@ if(room==rm_editor){
             <string>
 
 
-if(file_exists(working_directory+"\Levels\"+global.level_filename)){
+if(file_exists(working_directory+"\Levels\"+global.level_filename)&amp;&amp;(!global.loaded)){
    event_user(1);
+   global.loaded=1;
 }
 
 
@@ -1718,6 +1727,14 @@ if(state==ControlState.normal){
            spr_bridge_top,2,device_mouse_x(0)+32,device_mouse_y(0)-16,1,1,0,c_white,1);
            
            break;
+           
+           case "Spring" :
+           
+           draw_sprite_ext(
+           spr_spring,0,
+           device_mouse_x(0),device_mouse_y(0),1,1,0,c_white,1);
+           
+           break;
    
    }
    
@@ -1736,6 +1753,7 @@ if(state==ControlState.normal){
                                     
                   case "Arrow": UsesSprite=spr_arrow; x++; y++;  break;
                   case "Bridge": UsesSprite=spr_bridge_base; x++; y++; break;
+                  case "Spring": UsesSprite=spr_spring_editor; x++; y++; break;
                   
            }
       

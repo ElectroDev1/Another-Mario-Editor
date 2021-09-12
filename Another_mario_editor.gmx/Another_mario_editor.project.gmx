@@ -98,6 +98,12 @@
         <sprite>sprites\spr_bridge_icon</sprite>
       </sprites>
       <sprite>sprites\spr_nothumbnail</sprite>
+      <sprites name="In game">
+        <sprite>sprites\spr_coin_hud</sprite>
+        <sprite>sprites\spr_numbers_hud</sprite>
+        <sprite>sprites\spr_time_hud</sprite>
+        <sprite>sprites\spr_x_hud</sprite>
+      </sprites>
     </sprites>
     <sprites name="In game">
       <sprites name="Blue">
@@ -130,6 +136,9 @@
           <sprite>sprites\spr_firebar_block</sprite>
           <sprite>sprites\spr_firebar</sprite>
         </sprites>
+        <sprites name="Spring">
+          <sprite>sprites\spr_spring</sprite>
+        </sprites>
       </sprites>
       <sprite>sprites\spr_pinkplatform</sprite>
     </sprites>
@@ -137,6 +146,7 @@
       <sprite>sprites\spr_eraser</sprite>
       <sprite>sprites\spr_arrow_entity</sprite>
       <sprite>sprites\spr_extend_circle</sprite>
+      <sprite>sprites\spr_spring_editor</sprite>
     </sprites>
     <sprites name="Effects">
       <sprite>sprites\spr_ring</sprite>
@@ -200,7 +210,7 @@
         <object>objects\obj_cloud</object>
         <object>objects\obj_bridge</object>
       </objects>
-      <objects name="Green">
+      <objects name="Pink">
         <object>objects\obj_coin</object>
       </objects>
       <objects name="Yellow">
@@ -211,6 +221,9 @@
         </objects>
         <object>objects\obj_arrow</object>
         <object>objects\obj_firebar</object>
+        <objects name="Spring">
+          <object>objects\obj_spring</object>
+        </objects>
       </objects>
     </objects>
     <objects name="In editor">

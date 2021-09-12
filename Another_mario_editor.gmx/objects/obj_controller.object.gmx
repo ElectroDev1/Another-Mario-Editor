@@ -120,6 +120,9 @@ global.getstring_cont="saveas";
 
 fade_alpha=0;
 fade=0;
+
+
+global.number_font = font_add_sprite(spr_numbers_hud,ord("0"),false,0);
 </string>
           </argument>
         </arguments>
@@ -162,6 +165,7 @@ ds_map_add(global.entitymap,"Cloud",obj_cloud);
 ds_map_add(global.entitymap,"Arrow",obj_arrow);
 ds_map_add(global.entitymap,"Bridge",obj_bridge);
 ds_map_add(global.entitymap,"Firebar",obj_firebar);
+ds_map_add(global.entitymap,"Spring",obj_spring);
 
 //Set tile positions
 global.tileposX=ds_map_create();
@@ -213,6 +217,7 @@ ds_map_add(global.spritemap,"Cloud",spr_cloud);
 ds_map_add(global.spritemap,"Arrow",spr_arrow_icon);
 ds_map_add(global.spritemap,"Bridge",spr_bridge_icon);
 ds_map_add(global.spritemap,"Firebar",spr_firebar_block);
+ds_map_add(global.spritemap,"Spring",spr_spring);
 
 //Object type
 global.entityclass=ds_map_create();
@@ -234,6 +239,7 @@ ds_map_add(global.entityclass,"Cloud",0);
 ds_map_add(global.entityclass,"Arrow",3);
 ds_map_add(global.entityclass,"Bridge",0);
 ds_map_add(global.entityclass,"Firebar",3);
+ds_map_add(global.entityclass,"Spring",3);
 
 
 for(var a=0; a&lt;12; a++){ global.selected_entity[a]="Coin"; }
@@ -242,7 +248,7 @@ global.selected_entity[2]="QuestBlock";global.selected_entity[3]="InvBlock";
 global.selected_entity[4]="Spiketrap";global.selected_entity[4]="OnOff_switch";
 global.selected_entity[5]="OnOff_block_ON";global.selected_entity[6]="OnOff_block_OFF";
 global.selected_entity[7]="Cloud";global.selected_entity[8]="Arrow";
-global.selected_entity[9]="Bridge";/*global.selected_entity[10]="Firebar";*/
+global.selected_entity[9]="Bridge";global.selected_entity[10]="Spring";
 </string>
           </argument>
         </arguments>
@@ -267,6 +273,9 @@ global.selected_entity[9]="Bridge";/*global.selected_entity[10]="Firebar";*/
             <kind>1</kind>
             <string>instance_destroy(obj_entity_parent);
 global.closing=0; 
+onquestion=0;
+global.level_numb=0;
+event_user(2);
 audio_stop_all();
 room_goto(rm_levelselect);
 </string>
@@ -346,10 +355,10 @@ if (window_command_check(window_command_close)) {
 
     show_debug_message("Close attempted"); 
    
-   if(room==rm_ingame){
-      with(obj_editor_controller){ event_perform(ev_keypress,vk_enter); }
-   }
-     
+ if(room==rm_editor){
+    
+   
+   
    if(!global.saved){
    
     if(global.closing!=1){
@@ -360,7 +369,7 @@ if (window_command_check(window_command_close)) {
       game_end();
    } 
       
-   
+ }
     
     
 }
@@ -497,6 +506,47 @@ var i_d = ds_map_find_value(async_load, "id");
     }
     
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="12">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Load levels
+global.level_numb=0;
+global.levelname[60]="";
+
+//Get level number
+var levelfile=file_find_first(working_directory+"\Levels\*.sav",fa_directory);
+var i=0;
+
+while(levelfile!=''){
+
+    global.level_numb++;
+    global.levelname[i]=levelfile;
+    show_debug_message("Found level "+string(global.levelname[i]));
+    i++;
+    levelfile=file_find_next();
+    
+}
+
+show_debug_message("Found "+string(global.level_numb)+" levels");
 </string>
           </argument>
         </arguments>
@@ -766,6 +816,12 @@ var levelfile=file_find_first(working_directory+"\Levels\*.sav",fa_directory);
 var i=0;
 while(levelfile!=''){
 
+    if(room!=rm_init){
+     if(sprite_exists(global.levelsprite[i])&amp;&amp;(global.levelsprite[i]!=spr_nothumbnail)){
+       sprite_delete(global.levelsprite[i]);
+     } 
+    }
+
     if(file_exists(working_directory+"\Levels\Level images\"+
     string_delete(levelfile,string_length(levelfile)-3,4)+".png")){
       
@@ -965,9 +1021,7 @@ draw_set_halign(fa_left); draw_set_valign(fa_top);
 draw_set_colour(c_black);
 draw_text_transformed(2,2,
 
-"FPS:"+string(fps)+"#Room W:"+string(room_width)+"#View X:"+string(view_xview)+"#Idle:"+string(idling)+
-"#File:"+string(string_delete(global.level_filename,string_length(global.level_filename)-3,4)+"/"+
-string(global.level_numb))
+"FPS:"+string(fps)
 
 ,0.25,0.25,0);
 draw_set_colour(c_white);
