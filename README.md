@@ -23,9 +23,9 @@ using GitHub's Issues section.
 ------------------------------------------------------
 # CREDITS
 
-[HelloSammu](https://github.com/hellosammu) for undirectly inspiring into starting this (looking respectfully)
-
 [YellowAfterlife](https://github.com/YellowAfterlife) for his amazing extensions
+
+[HelloSammu](https://github.com/hellosammu) for undirectly inspiring into starting this (looking respectfully)
 
 [nkrapivin](https://github.com/nkrapivin)'s [Discord RPC extension](https://github.com/nkrapivin/NekoPresence) for Gamemaker
 
