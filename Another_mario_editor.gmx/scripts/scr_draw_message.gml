@@ -1,4 +1,11 @@
 ///scr_draw_message(x,y,string,opt1,opt2...)
+
+/*
+Draws a box with a custom messagee and buttons, everything is automated so
+you can just put the values in and go, it'll then return a value if a button was
+clicked (the value goes from 1 to the latest button on the list)
+*/
+
 var X=argument[0];
 var Y=argument[1];
 var message=argument[2];

@@ -280,6 +280,8 @@ switch(Entity_id){
             1+0.2*w,1+0.2*w,Angle,c_white,1);
           }
           
+          depth=3;
+          
        break;
        
           
@@ -340,6 +342,8 @@ switch(Entity_id){
        
        
        case "Bridge":
+       
+            depth=2;
        
             Attribute[Attributes.Width]=max(3,Attribute[Attributes.Width]);
             DrawSprite=0;

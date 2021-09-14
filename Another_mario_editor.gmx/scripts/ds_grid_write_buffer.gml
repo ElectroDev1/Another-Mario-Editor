@@ -1,5 +1,11 @@
 #define ds_grid_write_buffer
 ///ds_grid_write_buffer(grid[,decimals])
+
+/*
+This was a script I found online for an alterante way of saving level which would have made the level files
+a LOt smaller, sadly I can't seem to get it working
+*/
+
 var g = argument[0], ww = ds_grid_width(g), hh = ds_grid_height(g),
     number_format, dec = false, header_size = 8 + 8 + 2;
  

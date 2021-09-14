@@ -3,46 +3,7 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
-  <datafiles number="3" name="datafiles">
-    <datafiles number="3" name="Tiles">
-      <datafile>
-        <name>Tile_ground.png</name>
-        <exists>-1</exists>
-        <size>3061</size>
-        <exportAction>2</exportAction>
-        <exportDir></exportDir>
-        <overwrite>0</overwrite>
-        <freeData>-1</freeData>
-        <removeEnd>0</removeEnd>
-        <store>0</store>
-        <ConfigOptions>
-          <Config name="Default">
-            <CopyToMask>9223372036854775807</CopyToMask>
-          </Config>
-        </ConfigOptions>
-        <filename>Tile_ground.png</filename>
-      </datafile>
-      <datafiles number="3" name="Levels">
-        <datafile>
-          <name>Level.sav</name>
-          <exists>-1</exists>
-          <size>16240</size>
-          <exportAction>2</exportAction>
-          <exportDir></exportDir>
-          <overwrite>0</overwrite>
-          <freeData>-1</freeData>
-          <removeEnd>0</removeEnd>
-          <store>0</store>
-          <ConfigOptions>
-            <Config name="Default">
-              <CopyToMask>9223372036854775807</CopyToMask>
-            </Config>
-          </ConfigOptions>
-          <filename>Level.sav</filename>
-        </datafile>
-      </datafiles>
-    </datafiles>
-  </datafiles>
+  <datafiles number="3" name="datafiles"/>
   <NewExtensions>
     <extension index="0">extensions\GridBuffer</extension>
     <extension index="1">extensions\NekoPresence</extension>
@@ -76,33 +37,34 @@
       <sprite>sprites\spr_mario_spinjump</sprite>
     </sprites>
     <sprites name="UI">
-      <sprite>sprites\spr_game_button</sprite>
-      <sprite>sprites\spr_game_icon</sprite>
-      <sprite>sprites\spr_time_button</sprite>
-      <sprite>sprites\spr_world_icon</sprite>
-      <sprite>sprites\spr_playmovie_bar</sprite>
-      <sprite>sprites\spr_playmovie_base</sprite>
-      <sprite>sprites\spr_shadowmario_button</sprite>
-      <sprite>sprites\spr_cursor</sprite>
-      <sprite>sprites\spr_objectUI</sprite>
-      <sprite>sprites\spr_magnUI</sprite>
-      <sprite>sprites\spr_robotUI</sprite>
-      <sprite>sprites\spr_rubberUI</sprite>
-      <sprite>sprites\spr_undodog_UI</sprite>
-      <sprite>sprites\spr_redocat_UI</sprite>
-      <sprite>sprites\spr_menu_UI</sprite>
-      <sprite>sprites\spr_rocket_UI</sprite>
+      <sprite>sprites\spr_nothumbnail</sprite>
       <sprite>sprites\spr_reset_rocket</sprite>
       <sprites name="Special item icons">
         <sprite>sprites\spr_arrow_icon</sprite>
         <sprite>sprites\spr_bridge_icon</sprite>
       </sprites>
-      <sprite>sprites\spr_nothumbnail</sprite>
       <sprites name="In game">
         <sprite>sprites\spr_coin_hud</sprite>
         <sprite>sprites\spr_numbers_hud</sprite>
         <sprite>sprites\spr_time_hud</sprite>
         <sprite>sprites\spr_x_hud</sprite>
+      </sprites>
+      <sprites name="Editor HUD">
+        <sprite>sprites\spr_game_button</sprite>
+        <sprite>sprites\spr_game_icon</sprite>
+        <sprite>sprites\spr_time_button</sprite>
+        <sprite>sprites\spr_world_icon</sprite>
+        <sprite>sprites\spr_playmovie_bar</sprite>
+        <sprite>sprites\spr_playmovie_base</sprite>
+        <sprite>sprites\spr_shadowmario_button</sprite>
+        <sprite>sprites\spr_objectUI</sprite>
+        <sprite>sprites\spr_magnUI</sprite>
+        <sprite>sprites\spr_robotUI</sprite>
+        <sprite>sprites\spr_rubberUI</sprite>
+        <sprite>sprites\spr_undodog_UI</sprite>
+        <sprite>sprites\spr_redocat_UI</sprite>
+        <sprite>sprites\spr_menu_UI</sprite>
+        <sprite>sprites\spr_rocket_UI</sprite>
       </sprites>
     </sprites>
     <sprites name="In game">
@@ -151,10 +113,18 @@
     <sprites name="Effects">
       <sprite>sprites\spr_ring</sprite>
     </sprites>
+    <sprites name="Others">
+      <sprite>sprites\spr_cursor</sprite>
+      <sprite>sprites\spr_controller</sprite>
+    </sprites>
   </sprites>
   <backgrounds name="background">
-    <background>background\background0</background>
-    <background>background\background1</background>
+    <backgrounds name="Tiles">
+      <background>background\tiles_ground</background>
+    </backgrounds>
+    <backgrounds name="Level backgrounds">
+      <background>background\bkg_plains</background>
+    </backgrounds>
   </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
@@ -179,9 +149,7 @@
     <font>fonts\fnt_hd</font>
   </fonts>
   <objects name="objects">
-    <object>objects\obj_mousechek</object>
     <object>objects\obj_controller</object>
-    <object>objects\obj_levelselect_controller</object>
     <objects name="Collision">
       <object>objects\obj_semisolid</object>
       <object>objects\obj_slope_l</object>
@@ -226,16 +194,20 @@
         </objects>
       </objects>
     </objects>
-    <objects name="In editor">
+    <objects name="In editor objects">
       <object>objects\obj_editor_entity</object>
+      <object>objects\obj_entity_dead</object>
       <object>objects\obj_editor_controller</object>
       <object>objects\obj_mario_editor</object>
       <object>objects\obj_mario_shadow</object>
-      <object>objects\obj_entity_dead</object>
       <object>objects\obj_reset_rocket</object>
     </objects>
     <objects name="Effects">
       <object>objects\obj_ring_effect</object>
+    </objects>
+    <objects name="Others">
+      <object>objects\obj_mousechek</object>
+      <object>objects\obj_levelselect_controller</object>
     </objects>
   </objects>
   <rooms name="rooms">

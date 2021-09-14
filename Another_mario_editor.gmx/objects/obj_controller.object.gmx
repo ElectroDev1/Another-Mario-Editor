@@ -144,7 +144,7 @@ global.number_font = font_add_sprite(spr_numbers_hud,ord("0"),false,0);
           <argument>
             <kind>1</kind>
             <string>///Initialize enitity ids
-global.tileset=background_add("Tiles\Tile_ground.png",1,0);
+global.tileset=tiles_ground;//background_add("Tiles\Tile_ground.png",1,0);
 
 entityname[0]="Semis"; entityname[1]="Ground"
 
@@ -181,6 +181,7 @@ ds_map_add(global.tileposX,"OnOff_block_ON",137);
 ds_map_add(global.tileposX,"OnOff_block_OFF",188);
 ds_map_add(global.tileposX,"Cloud",205);
 ds_map_add(global.tileposX,"Firebar",239);
+ds_map_add(global.tileposX,"Spring",52);
 
 global.tileposY=ds_map_create();
 
@@ -195,6 +196,7 @@ ds_map_add(global.tileposY,"OnOff_block_ON",1);
 ds_map_add(global.tileposY,"OnOff_block_OFF",1);
 ds_map_add(global.tileposY,"Cloud",1);
 ds_map_add(global.tileposY,"Firebar",1);
+ds_map_add(global.tileposY,"Spring",18);
 
 //Set sprites
 /*
@@ -369,7 +371,7 @@ if (window_command_check(window_command_close)) {
       game_end();
    } 
       
- }
+ }else if(room==rm_levelselect){ game_end(); }
     
     
 }
