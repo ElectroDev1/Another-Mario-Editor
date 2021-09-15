@@ -307,10 +307,10 @@ instance_destroy(obj_mario_shadow);
                       child.image_xscale=Attribute[Attributes.Width];
                 break;
                 
-                case obj_spring :
+                /*case obj_spring :
                       child.x+=8;
                       child.y+=8;
-                break;
+                break;*/
          
          }
          
@@ -1803,6 +1803,8 @@ if(state==ControlState.normal){
           <argument>
             <kind>1</kind>
             <string>if(!keyboard_check(vk_alt)){
+
+obj_controller.fade_alpha=1;
 
 if(room==rm_editor){
         

@@ -1,0 +1,403 @@
+Converting GML script: ${project_dir}\scripts\scr_approach\scr_approach.gml
+Converted description /// @description scr_approach(Value,Final Value,Speed);/// @param Value
+/// @param Final Value
+/// @param Speed
+
+Converting GML script: ${project_dir}\scripts\scr_input_check\scr_input_check.gml
+Converted description /// @description scr_input_check(enum)/// @param enum
+
+Converting GML script: ${project_dir}\scripts\scr_input_check_pressed\scr_input_check_pressed.gml
+Converted description /// @description scr_input_check_pressed(enum)/// @param enum
+
+Converting GML script: ${project_dir}\scripts\scr_input_check_released\scr_input_check_released.gml
+Converted description /// @description scr_input_check_released(enum)/// @param enum
+
+Converting GML script: ${project_dir}\scripts\scr_slope_calculatepos\scr_slope_calculatepos.gml
+Converted description /// @description scr_slope_calculatepos
+
+Converting GML script: ${project_dir}\scripts\scr_collision_rectangle_list\scr_collision_rectangle_list.gml
+Converted description /// @description  scr_collision_rectangle_list(x1,y1,x2,y2,obj,prec,notme)/// @param x1
+/// @param y1
+/// @param x2
+/// @param y2
+/// @param obj
+/// @param prec
+/// @param notme
+
+Converting GML script: ${project_dir}\scripts\ds_grid_write_buffer\ds_grid_write_buffer.gml
+Converted description /// @description ds_grid_write_buffer(grid[,decimals])/// @param grid[
+/// @param decimals]
+
+Converting GML script: ${project_dir}\scripts\ds_grid_read_buffer\ds_grid_read_buffer.gml
+Converted description /// @description ds_grid_read_buffer(buffer)/// @param buffer
+
+Converting GML script: ${project_dir}\scripts\buffer_number_constant\buffer_number_constant.gml
+Converted description /// @description buffer_number_constant(min,max,dec)/// @param min
+/// @param max
+/// @param dec
+
+Converting GML script: ${project_dir}\scripts\ds_grid_dump\ds_grid_dump.gml
+Converted description /// @description ds_grid_dump(grid)/// @param grid
+
+Converting GML script: ${project_dir}\scripts\draw_pie\draw_pie.gml
+Converted description /// @description  draw_pie(x ,y ,value, max, colour, radius, transparency)/// @param x 
+/// @param y 
+/// @param value
+/// @param  max
+/// @param  colour
+/// @param  radius
+/// @param  transparency
+
+Converting GML script: ${project_dir}\scripts\scr_draw_message\scr_draw_message.gml
+Error: variable 'message' has same name as a built-in (function, constant or variable), it must be renamed to function correctly
+Converted description /// @description scr_draw_message(x,y,string,opt1,opt2...)/// @param x
+/// @param y
+/// @param string
+/// @param opt1
+/// @param opt2...
+
+Converting GML script: ${project_dir}\scripts\unix_timestamp\unix_timestamp.gml
+Converted description /// @description  unix_timestamp([datetime])/// @param [datetime]
+
+Converting GML script: ${project_dir}\scripts\scr_save_level\scr_save_level.gml
+Converted description /// @description Save level
+Converted string - line 16: "Levels\Level images\" -> "Levels\\Level images\\"
+Converted string - line 69: "Levels\" -> "Levels\\"
+
+Font fnt_mario_big has been converted to font family Press Start 2P (Regular)
+GameMaker Studio 1 font texture has been backed up at ${project_dir}\fonts\fnt_mario_big\fnt_mario_big.gms1.png
+Font fnt_mario has been converted to font family Press Start 2P (Regular)
+GameMaker Studio 1 font texture has been backed up at ${project_dir}\fonts\fnt_mario\fnt_mario.gms1.png
+Font fnt_hd has been converted to font family Arial (Regular)
+GameMaker Studio 1 font texture has been backed up at ${project_dir}\fonts\fnt_hd\fnt_hd.gms1.png
+Converting GML script: ${project_dir}\objects\obj_controller\Create_0.gml
+Converted description /// @description AME controller
+
+Converting GML script: ${project_dir}\objects\obj_controller\Step_0.gml
+Converted description /// @description Controller logic
+
+Converting GML script: ${project_dir}\objects\obj_controller\Other_63.gml
+Converted string - line 15: "\Levels\*.sav" -> "\\Levels\\*.sav"
+Converted string - line 17: '' -> ""
+Converted string - line 30: "\Levels\" -> "\\Levels\\"
+
+Converting GML script: ${project_dir}\objects\obj_controller\Other_12.gml
+Converted description /// @description Load levels
+Converted string - line 6: "\Levels\*.sav" -> "\\Levels\\*.sav"
+Converted string - line 9: '' -> ""
+
+Converting GML script: ${project_dir}\objects\obj_controller\Other_11.gml
+Converted description /// @description Save this file
+
+Converting GML script: ${project_dir}\objects\obj_controller\Other_2.gml
+Converted string - line 11: "\Levels\*.sav" -> "\\Levels\\*.sav"
+Converted string - line 14: '' -> ""
+Converted string - line 103: "\Levels\*.sav" -> "\\Levels\\*.sav"
+Converted string - line 105: '' -> ""
+Converted string - line 113: "\Levels\Level images\" -> "\\Levels\\Level images\\"
+Converted string - line 116: "\Levels\Level images\" -> "\\Levels\\Level images\\"
+
+Converting GML script: ${project_dir}\objects\obj_controller\Draw_64.gml
+Converted string - line 36: "\Levels\" -> "\\Levels\\"
+
+Converting GML script: ${project_dir}\objects\obj_semisolid\Step_0.gml
+Converted description /// @description Go visible if debug mode is on
+
+Converting GML script: ${project_dir}\objects\obj_slope_l\Create_0.gml
+Converted description /// @description Left gentle slope
+
+Converting GML script: ${project_dir}\objects\obj_slope_r\Create_0.gml
+Converted description /// @description Right gentle slope
+
+Converting GML script: ${project_dir}\objects\obj_slope_sl\Create_0.gml
+Converted description /// @description Right gentle slope
+
+Converting GML script: ${project_dir}\objects\obj_slope_sr\Create_0.gml
+Converted description /// @description Right gentle slope
+
+Converting GML script: ${project_dir}\objects\obj_solid\Create_0.gml
+Error: variable 'layer' has same name as a built-in (function, constant or variable), it must be renamed to function correctly
+
+Converting GML script: ${project_dir}\objects\obj_slopeparent\Step_0.gml
+Converted description /// @description Stay to the second image
+
+Converting GML script: ${project_dir}\objects\obj_playerparent\Step_0.gml
+Converted builtin - line 79: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 79: view_hview -> __view_get( e__VW.HView, 0 )
+Converted description /// @description Player logic
+
+Converting GML script: ${project_dir}\objects\obj_camera\Step_0.gml
+Converted builtin - line 21: view_xview[view_current] -> __view_get( e__VW.XView, view_current )
+Converted builtin - line 25: view_xview[view_current] -> __view_get( e__VW.XView, view_current )
+Converted builtin - line 6: view_xview = (round(-(view_wview[view_current]/2) + x)+obj_controller.ViewXoffset) -> __view_set( e__VW.XView, 0, (round(-(view_wview[view_current]/2) + x)+obj_controller.ViewXoffset) )
+Converted builtin - line 22: view_xview[view_current]+=8 -> __view_set( e__VW.XView, view_current, __view_get( e__VW.XView, view_current ) + (8) )
+Converted builtin - line 22: view_xview[view_current]=0 -> __view_set( e__VW.XView, view_current, 0 )
+Converted builtin - line 26: view_xview[view_current]=room_width-view_wview[view_current] -> __view_set( e__VW.XView, view_current, room_width-view_wview[view_current] )
+Converted builtin - line 36: view_xview[view_current] += random_range(-shake,shake) -> __view_set( e__VW.XView, view_current, __view_get( e__VW.XView, view_current ) + (random_range(-shake,shake)) )
+Converted builtin - line 18: view_yview[view_current] -> __view_get( e__VW.YView, view_current )
+Converted builtin - line 29: view_yview[view_current] -> __view_get( e__VW.YView, view_current )
+Converted builtin - line 33: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 7: view_yview = (round(-(view_hview[view_current]/2) + y+32+8)+obj_controller.ViewYoffset) -> __view_set( e__VW.YView, 0, (round(-(view_hview[view_current]/2) + y+32+8)+obj_controller.ViewYoffset) )
+Converted builtin - line 18: view_yview[view_current]+=8 -> __view_set( e__VW.YView, view_current, __view_get( e__VW.YView, view_current ) + (8) )
+Converted builtin - line 18: view_yview[view_current]=64 -> __view_set( e__VW.YView, view_current, 64 )
+Converted builtin - line 30: view_yview[view_current]-=8 -> __view_set( e__VW.YView, view_current, __view_get( e__VW.YView, view_current ) - (8) )
+Converted builtin - line 30: view_yview[view_current]=room_height-view_hview[view_current]+8 -> __view_set( e__VW.YView, view_current, room_height-view_hview[view_current]+8 )
+Converted builtin - line 37: view_yview[view_current] += random_range(-shakeV,shakeV) -> __view_set( e__VW.YView, view_current, __view_get( e__VW.YView, view_current ) + (random_range(-shakeV,shakeV)) )
+Converted builtin - line 25: view_wview[view_current] -> __view_get( e__VW.WView, view_current )
+Converted builtin - line 29: view_hview[view_current] -> __view_get( e__VW.HView, view_current )
+Converted builtin - line 33: view_hview -> __view_get( e__VW.HView, 0 )
+Converted description /// @description Camera logic
+Converted builtin - line 33: view_yview=min(__view_get( e__VW.YView, 0 ),room_height-__view_get( e__VW.HView, 0 )-8) -> __view_set( e__VW.YView, 0, min(__view_get( e__VW.YView, 0 ),room_height-__view_get( e__VW.HView, 0 )-8) )
+Converted builtin - line 6: view_wview[view_current] -> __view_get( e__VW.WView, view_current )
+Converted builtin - line 26: view_wview[view_current] -> __view_get( e__VW.WView, view_current )
+Converted builtin - line 7: view_hview[view_current] -> __view_get( e__VW.HView, view_current )
+Converted builtin - line 30: view_hview[view_current] -> __view_get( e__VW.HView, view_current )
+
+Converting GML script: ${project_dir}\objects\obj_game_controller\Draw_0.gml
+Converted builtin - line 2: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 2: view_xview -> __view_get( e__VW.XView, 0 )
+
+Converting GML script: ${project_dir}\objects\obj_bridge\Draw_0.gml
+Converted description /// @description Draw the bridge
+
+Converting GML script: ${project_dir}\objects\obj_editor_entity\Alarm_0.gml
+Converted description /// @description Update tile
+
+Converting GML script: ${project_dir}\objects\obj_entity_dead\Step_0.gml
+Converted builtin - line 4: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 4: view_hview -> __view_get( e__VW.HView, 0 )
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Create_0.gml
+Converted description /// @description Stock file
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Alarm_1.gml
+Converted description /// @description Enter game
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Step_0.gml
+Converted builtin - line 34: view_xview[0] -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 35: view_xview[0] -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 90: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 91: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 114: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 169: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 184: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 186: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 198: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 200: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 213: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 215: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 233: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 235: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 254: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 256: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 293: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 295: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 338: view_xview[view_current] -> __view_get( e__VW.XView, view_current )
+Converted builtin - line 342: view_xview[view_current] -> __view_get( e__VW.XView, view_current )
+Converted builtin - line 339: view_xview[view_current]+=8 -> __view_set( e__VW.XView, view_current, __view_get( e__VW.XView, view_current ) + (8) )
+Converted builtin - line 339: view_xview[view_current]=0 -> __view_set( e__VW.XView, view_current, 0 )
+Converted builtin - line 343: view_xview[view_current]=room_width-view_wview[view_current] -> __view_set( e__VW.XView, view_current, room_width-view_wview[view_current] )
+Converted builtin - line 34: view_yview[0] -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 35: view_yview[0] -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 89: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 115: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 169: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 185: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 187: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 199: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 201: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 214: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 216: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 234: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 236: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 255: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 257: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 294: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 296: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 335: view_yview[view_current] -> __view_get( e__VW.YView, view_current )
+Converted builtin - line 346: view_yview[view_current] -> __view_get( e__VW.YView, view_current )
+Converted builtin - line 350: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 335: view_yview[view_current]+=8 -> __view_set( e__VW.YView, view_current, __view_get( e__VW.YView, view_current ) + (8) )
+Converted builtin - line 335: view_yview[view_current]=64 -> __view_set( e__VW.YView, view_current, 64 )
+Converted builtin - line 347: view_yview[view_current]-=8 -> __view_set( e__VW.YView, view_current, __view_get( e__VW.YView, view_current ) - (8) )
+Converted builtin - line 347: view_yview[view_current]=room_height-view_hview[view_current]+8 -> __view_set( e__VW.YView, view_current, room_height-view_hview[view_current]+8 )
+Converted builtin - line 91: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 114: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 169: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 184: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 186: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 198: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 200: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 213: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 215: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 233: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 235: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 254: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 256: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 342: view_wview[view_current] -> __view_get( e__VW.WView, view_current )
+Converted builtin - line 346: view_hview[view_current] -> __view_get( e__VW.HView, view_current )
+Converted builtin - line 350: view_hview -> __view_get( e__VW.HView, 0 )
+Converted description /// @description Editor logic
+Converted builtin - line 350: view_yview=min(__view_get( e__VW.YView, 0 ),room_height-__view_get( e__VW.HView, 0 )-8) -> __view_set( e__VW.YView, 0, min(__view_get( e__VW.YView, 0 ),room_height-__view_get( e__VW.HView, 0 )-8) )
+Converted builtin - line 343: view_wview[view_current] -> __view_get( e__VW.WView, view_current )
+Converted builtin - line 347: view_hview[view_current] -> __view_get( e__VW.HView, view_current )
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Other_15.gml
+Converted builtin - line 4: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 4: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 4: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 4: view_hview -> __view_get( e__VW.HView, 0 )
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Other_14.gml
+Converted description /// @description Redo
+Converted string - line 4: "Temp\TempLevel_" -> "Temp\\TempLevel_"
+Converted string - line 12: "Temp\TempLevel_" -> "Temp\\TempLevel_"
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Other_13.gml
+Converted description /// @description Load temp
+Converted string - line 12: "Temp\TempLevel_" -> "Temp\\TempLevel_"
+Converted string - line 15: "Temp\TempLevel_" -> "Temp\\TempLevel_"
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Other_12.gml
+Converted description /// @description Save a temp file
+Converted string - line 43: "Temp\TempLevel_" -> "Temp\\TempLevel_"
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Other_11.gml
+Converted description /// @description Load levels
+Converted string - line 15: "Levels\" -> "Levels\\"
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Other_10.gml
+Converted description /// @description Save level
+Converted string - line 25: "Levels\Level images\" -> "Levels\\Level images\\"
+Converted string - line 77: "Levels\" -> "Levels\\"
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Other_4.gml
+Converted builtin - line 29: view_xview[0]=VX -> __view_set( e__VW.XView, 0, VX )
+Converted builtin - line 28: view_yview[0]=VY -> __view_set( e__VW.YView, 0, VY )
+Converted builtin - line 24: view_wview[0]=obj_controller.Window_W -> __view_set( e__VW.WView, 0, obj_controller.Window_W )
+Converted builtin - line 25: view_hview[0]=obj_controller.Window_H -> __view_set( e__VW.HView, 0, obj_controller.Window_H )
+Converted builtin - line 23: view_visible[0]=true -> __view_set( e__VW.Visible, 0, true )
+Converted builtin - line 26: view_wport[0]=obj_controller.Window_W -> __view_set( e__VW.WPort, 0, obj_controller.Window_W )
+Converted builtin - line 27: view_hport[0]=obj_controller.Window_H -> __view_set( e__VW.HPort, 0, obj_controller.Window_H )
+Converted string - line 4: "\Levels\" -> "\\Levels\\"
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\Draw_0.gml
+Converted builtin - line 6: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 6: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 25: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 25: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 40: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 40: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 112: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 113: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 25: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 25: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 40: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 40: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 111: view_yview -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 25: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 40: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 113: view_wview -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 25: view_hview -> __view_get( e__VW.HView, 0 )
+Converted builtin - line 40: view_hview -> __view_get( e__VW.HView, 0 )
+
+Converting GML script: ${project_dir}\objects\obj_editor_controller\KeyPress_13.gml
+Converted builtin - line 23: view_xview -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 24: view_yview -> __view_get( e__VW.YView, 0 )
+
+Converting GML script: ${project_dir}\objects\obj_mario_editor\Step_0.gml
+Converted builtin - line 21: view_xview[0] -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 21: view_xview[0] -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 22: view_xview[0] -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 22: view_xview[0] -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 28: view_xview[0] -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 29: view_xview[0] -> __view_get( e__VW.XView, 0 )
+Converted builtin - line 21: view_xview[0]-=4 -> __view_set( e__VW.XView, 0, __view_get( e__VW.XView, 0 ) - (4) )
+Converted builtin - line 22: view_xview[0]+=4 -> __view_set( e__VW.XView, 0, __view_get( e__VW.XView, 0 ) + (4) )
+Converted builtin - line 24: view_yview[0] -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 24: view_yview[0] -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 25: view_yview[0] -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 25: view_yview[0] -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 31: view_yview[0] -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 32: view_yview[0] -> __view_get( e__VW.YView, 0 )
+Converted builtin - line 24: view_yview[0]-=4 -> __view_set( e__VW.YView, 0, __view_get( e__VW.YView, 0 ) - (4) )
+Converted builtin - line 25: view_yview[0]+=4 -> __view_set( e__VW.YView, 0, __view_get( e__VW.YView, 0 ) + (4) )
+Converted builtin - line 22: view_wview[0] -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 22: view_wview[0] -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 29: view_wview[0] -> __view_get( e__VW.WView, 0 )
+Converted builtin - line 25: view_hview[0] -> __view_get( e__VW.HView, 0 )
+Converted builtin - line 25: view_hview[0] -> __view_get( e__VW.HView, 0 )
+Converted builtin - line 32: view_hview[0] -> __view_get( e__VW.HView, 0 )
+
+Converting GML script: ${project_dir}\objects\obj_reset_rocket\Step_0.gml
+Converted builtin - line 12: view_yview -> __view_get( e__VW.YView, 0 )
+
+Windows NSIS Installer Script has been set to default due to changes in GameMaker Studio 2
+Converting GML script: ${project_dir}\objects\obj_levelselect_controller\Create_0.gml
+Converted description /// @description Variables
+
+Converting GML script: ${project_dir}\objects\obj_levelselect_controller\Other_10.gml
+Converted description /// @description Load some file info
+Converted string - line 2: "Levels\" -> "Levels\\"
+
+Converting GML script: ${project_dir}\objects\obj_levelselect_controller\Other_5.gml
+Converted description /// @description Free everything
+
+Converting GML script: ${project_dir}\objects\obj_levelselect_controller\Draw_0.gml
+Converted description /// @description Draw menu
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  (index): Hooks the specified command /// @param index
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  (index):/// @param index
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  (index, param = 0):/// @param index
+/// @param  param = 0
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  (command): Returns whether the given command is currently available./// @param command
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  (command, status:bool): Enables/disables the command. Returns -1 if not possible./// @param command
+/// @param  status:bool
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  (stayontop:bool): Allows to set a window to show on top of the rest like with GM8./// @param stayontop:bool
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  (visible:bool): Hides or shows the window like the respective function in GM8./// @param visible:bool
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  (redraw_enabled:bool)/// @param redraw_enabled:bool
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  (enable:bool)/// @param enable:bool
+
+Converting GML script: window_command_hook.gml
+Converted description /// @description  ()->enabled?
+
+Missing audiogroup for sound: 'snd_coursebot' - setting to default audio group
+Missing audiogroup for sound: 'snd_ground_maker' - setting to default audio group
+Missing audiogroup for sound: 'snd_ground' - setting to default audio group
+Game speed set to 60
+Added compatibility script 'background/background_get_height.gml'
+Added compatibility script 'background/draw_background.gml'
+Added compatibility script 'draw/draw_set_blend_mode.gml'
+Added compatibility script 'draw/draw_set_blend_mode_ext.gml'
+Added compatibility script 'instance/instance_create.gml'
+Added compatibility script 'object/object_get_depth.gml'
+Added compatibility script 'texture/texture_set_interpolation.gml'
+Added compatibility script 'tile/tile_add.gml'
+Added compatibility script 'tile/tile_delete.gml'
+Added compatibility script 'tile/tile_exists.gml'
+Added compatibility script 'tile/tile_set_position.gml'
+Added compatibility script 'tile/tile_set_visible.gml'
+Added compatibility script 'view/__view_get.gml'
+Added compatibility script 'view/__view_set.gml'
+Added compatibility script 'view/__view_set_internal.gml'
+Added compatibility script 'background/__init_background.gml'
+Added compatibility script 'view/__init_view.gml'
+Added compatibility script '__init_global.gml'
+Added compatibility script '__global_object_depths.gml'

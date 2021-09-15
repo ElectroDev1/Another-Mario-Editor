@@ -1,0 +1,2 @@
+entitycollision=-4;
+

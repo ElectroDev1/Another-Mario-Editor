@@ -35,6 +35,11 @@ XSPD=0;
 YSPD=0;
 canH=1;
 canV=1;
+
+if(instance_exists(Object)){
+   x=Object.x;
+   y=Object.y;
+}
 </string>
           </argument>
         </arguments>
