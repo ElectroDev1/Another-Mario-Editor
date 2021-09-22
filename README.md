@@ -23,11 +23,13 @@ using GitHub's Issues section.
 ------------------------------------------------------
 # CREDITS
 
-[YellowAfterlife](https://github.com/YellowAfterlife) for his amazing extensions
-
 [HelloSammu](https://github.com/hellosammu) for undirectly inspiring into starting this (looking respectfully)
 
+[YellowAfterlife](https://github.com/YellowAfterlife) for his amazing extensions
+
 [nkrapivin](https://github.com/nkrapivin)'s [Discord RPC extension](https://github.com/nkrapivin/NekoPresence) for Gamemaker
+
+[Xor](https://twitter.com/XorDev) for his guassian blur shader and his overall fantastic [tutorials](https://xorshaders.weebly.com/)
 
 All the game's sprites were taken from [The Spriters Resource](https://www.spriters-resource.com/nintendo_switch/supermariomaker2/), with additional sprites
 by myself

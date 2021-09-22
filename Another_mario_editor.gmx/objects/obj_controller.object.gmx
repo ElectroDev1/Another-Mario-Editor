@@ -144,14 +144,36 @@ global.number_font = font_add_sprite(spr_numbers_hud,ord("0"),false,0);
           <argument>
             <kind>1</kind>
             <string>///Initialize enitity ids
-global.tileset=tiles_ground;//background_add("Tiles\Tile_ground.png",1,0);
+/*
+This one big script handles all of the entity data, sprites, tiles, names..
+It'll be optimized in the future with a simple json file
+*/
 
-entityname[0]="Semis"; entityname[1]="Ground"
+//Tileset used to get tiles
+global.tileset=tiles_ground;
+
+
+//Get enityty names
+//Ds maps might get optimized as well with a json file
+var file = file_text_open_read("Entity_list.txt");
+
+var num = 0; 
+
+while(!file_text_eoln(file)){
+
+   entityname[num] = file_text_read_string(file);
+   file_text_readln(file);
+   show_debug_message("Read entity: "+entityname[num]);
+   num++;
+   
+}
+   
+file_text_close(file);
 
 global.entitymap=ds_map_create();
 
-ds_map_add(global.entitymap,"Semis",obj_semisolid);
-ds_map_add(global.entitymap,"Ground",obj_solid);//Still dunno how I'd handle walls
+//ds_map_add(global.entitymap,"Semis",obj_semisolid);
+//ds_map_add(global.entitymap,"Ground",obj_solid);//Still dunno how I'd handle walls
 ds_map_add(global.entitymap,"Coin",obj_coin);
 ds_map_add(global.entitymap,"MetalBlock",obj_metal_block);
 ds_map_add(global.entitymap,"FlipBlock",obj_flipblock);
@@ -166,6 +188,23 @@ ds_map_add(global.entitymap,"Arrow",obj_arrow);
 ds_map_add(global.entitymap,"Bridge",obj_bridge);
 ds_map_add(global.entitymap,"Firebar",obj_firebar);
 ds_map_add(global.entitymap,"Spring",obj_spring);
+
+global.entityName=ds_map_create();
+
+ds_map_add(global.entityName,"Coin","Coin");
+ds_map_add(global.entityName,"Bridge","Bridge");
+ds_map_add(global.entityName,"Arrow","Arrow");
+ds_map_add(global.entityName,"MetalBlock","Metal block");
+ds_map_add(global.entityName,"FlipBlock","Flip block");
+ds_map_add(global.entityName,"QuestBlock","? block");
+ds_map_add(global.entityName,"InvBlock","Invisible block");
+ds_map_add(global.entityName,"Spiketrap","Spiketrap");
+ds_map_add(global.entityName,"OnOff_switch","ON OFF switch");
+ds_map_add(global.entityName,"OnOff_block_ON","ON block");
+ds_map_add(global.entityName,"OnOff_block_OFF","OFF block");
+ds_map_add(global.entityName,"Cloud","Cloud");
+ds_map_add(global.entityName,"Firebar","Firebar");
+ds_map_add(global.entityName,"Spring","Spring");
 
 //Set tile positions
 global.tileposX=ds_map_create();
@@ -182,6 +221,7 @@ ds_map_add(global.tileposX,"OnOff_block_OFF",188);
 ds_map_add(global.tileposX,"Cloud",205);
 ds_map_add(global.tileposX,"Firebar",239);
 ds_map_add(global.tileposX,"Spring",52);
+
 
 global.tileposY=ds_map_create();
 
@@ -204,8 +244,8 @@ This is for the UI icons
 */
 global.spritemap=ds_map_create();
 
-ds_map_add(global.spritemap,"Semis",spr_semisolid);
-ds_map_add(global.spritemap,"Ground",spr_solid);
+//ds_map_add(global.spritemap,"Semis",spr_semisolid);
+//ds_map_add(global.spritemap,"Ground",spr_terrain_icon);
 ds_map_add(global.spritemap,"Coin",spr_coin);
 ds_map_add(global.spritemap,"MetalBlock",spr_metal_block);
 ds_map_add(global.spritemap,"FlipBlock",spr_flipblock);
@@ -226,31 +266,80 @@ global.entityclass=ds_map_create();
 
 
 
-ds_map_add(global.entityclass,"Semis",0);
-ds_map_add(global.entityclass,"Ground",0);
-ds_map_add(global.entityclass,"Coin",1);
+//ds_map_add(global.entityclass,"Semis",0);
+//ds_map_add(global.entityclass,"Ground",0);
+
 ds_map_add(global.entityclass,"MetalBlock",0);
 ds_map_add(global.entityclass,"FlipBlock",0);
 ds_map_add(global.entityclass,"QuestBlock",0);
 ds_map_add(global.entityclass,"InvBlock",0);
 ds_map_add(global.entityclass,"Spiketrap",0);
+ds_map_add(global.entityclass,"Cloud",0);
+ds_map_add(global.entityclass,"Bridge",0);
+
+ds_map_add(global.entityclass,"Coin",1);
+
 ds_map_add(global.entityclass,"OnOff_switch",3);
 ds_map_add(global.entityclass,"OnOff_block_ON",3);
 ds_map_add(global.entityclass,"OnOff_block_OFF",3);
-ds_map_add(global.entityclass,"Cloud",0);
 ds_map_add(global.entityclass,"Arrow",3);
-ds_map_add(global.entityclass,"Bridge",0);
 ds_map_add(global.entityclass,"Firebar",3);
 ds_map_add(global.entityclass,"Spring",3);
 
 
-for(var a=0; a&lt;12; a++){ global.selected_entity[a]="Coin"; }
-global.selected_entity[0]="MetalBlock";global.selected_entity[1]="FlipBlock";
-global.selected_entity[2]="QuestBlock";global.selected_entity[3]="InvBlock";
-global.selected_entity[4]="Spiketrap";global.selected_entity[4]="OnOff_switch";
-global.selected_entity[5]="OnOff_block_ON";global.selected_entity[6]="OnOff_block_OFF";
-global.selected_entity[7]="Cloud";global.selected_entity[8]="Arrow";
-global.selected_entity[9]="Bridge";global.selected_entity[10]="Spring";
+//Entity list (the one in the top part of the editor HUD)
+global.entity_list = ds_list_create();
+
+for(var a=0; a&lt;12; a++){ global.selected_entity[a]="Coin"; ds_list_add(global.entity_list,"Coin"); }
+
+ds_list_add(global.entity_list,"MetalBlock","FlipBlock","QuestBlock","InvBlock","Spiketrap","OnOff_switch",
+"OnOff_block_ON","OnOff_block_OFF","Cloud","Arrow","Bridge","Spring");
+
+
+//Load order from file
+if(file_exists("Selected_entities.txt")){
+
+var file = file_text_open_read("Selected_entities.txt");
+
+var num = 0; 
+
+while(!file_text_eoln(file)){
+
+   ds_list_replace(global.entity_list,num,file_text_read_string(file));
+   file_text_readln(file);
+   show_debug_message("Put entity in list: "+entityname[num]);
+   num++;
+   
+}
+
+}
+
+//Create the editor controller
+alarm[3]=2;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="3">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Create editor controller
+instance_create(0,0,obj_editor_controller);
 </string>
           </argument>
         </arguments>
@@ -943,6 +1032,13 @@ switch(global.closing){
    var T = scr_draw_message(display_get_gui_width(),display_get_gui_height(),
    "The level wasn't saved!#Would you like to save?","Save","Don't save","Cancel");
    
+   if(room==rm_editor){
+   
+       instance_activate_object(obj_editor_entity); 
+      instance_activate_object(obj_mario_editor);
+   
+   }
+   
    switch(T){
     
        case 1: with(obj_editor_controller){event_user(0);} game_end(); break;
@@ -1021,9 +1117,14 @@ switch(global.closing){
 
 draw_set_halign(fa_left); draw_set_valign(fa_top);
 draw_set_colour(c_black);
-draw_text_transformed(2,2,
 
-"FPS:"+string(fps)
+var deOff=0;
+if(room==rm_ingame){ deOff=40; }
+
+draw_text_transformed(2+deOff,2,
+
+"FPS:"+string(fps)+
+"#"+string(global.level_filename)
 
 ,0.25,0.25,0);
 draw_set_colour(c_white);

@@ -571,8 +571,15 @@ if(onpage_index!=-1){
       goinput=-999;
       
       if(onpage_index&gt;-1){
-      global.level_filename=global.levelname[onpage_index];
-      global.new_filename=string_delete(global.level_filename,string_length(global.level_filename)-3,4);
+      
+         if(onpage_index&lt;global.level_numb){
+           global.level_filename=global.levelname[onpage_index];
+           global.new_filename=string_delete(global.level_filename,string_length(global.level_filename)-3,4);
+         }else{
+           global.level_filename="";
+           global.new_filename="Level";
+         }
+      
       }
       obj_controller.fade=1;
       alarm[0]=30;

@@ -229,6 +229,8 @@ draw_text_transformed(display_get_gui_width()+Score_x,Score_y,
           <argument>
             <kind>1</kind>
             <string>depth=6;
+
+
 draw_background(bkg_plains,view_xview-view_xview/10,room_height-background_get_height(bkg_plains));
 
 </string>

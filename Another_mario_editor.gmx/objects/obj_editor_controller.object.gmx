@@ -170,50 +170,69 @@ MenuOffset[Menus-1]=0;
             <kind>1</kind>
             <string>///Editor object
 
+//If we loaded a level
 global.loaded=0;
 
+//If we should draw the ediotr (grid, HUD..)
 global.draweditor=1;
 
+//If we can place an entity
 enitityplace=-1;
 
+//Entity that we can place
+selected_id=-1;
+
+//HUD surface
 gui_surf=-4;
 
+//Grid surface
 grid_surf=-4;
 
-selected_id=-1;
+
 w=0; wt=0;
 
+//If shadows should be rendered
 shadow_allow=false;
 
+//Create Mario
 instance_create(64,340,obj_mario_editor);
 
+//Editor state and indexes
 state=0;
 enum ControlState { normal, erase, searching }
+
 
 VX=0;
 VY=obj_controller.Window_H;
 
+//ID of the selected identity
 EntitySelected=-4;
 
+//ID of the dragging entity
+Drag_id=-4;
+
+//If we're placing
 Placing=0;
+
+//If we're dragging
 Dragging=0;
 
+//Latest entity we've interacted with
 LatestEntity=-4;
 
-Drag_id=-4;
 
 //Level attributes
 World=0;
 Time=0;
-Scroll=0; //Includes scrollspeed too
+Scroll=0;
 ClearCond=0;
 
+//Some debug string
 infostring="";
 infoalpha=0;
 
-//Undo and redo variables
+//Undo, redo, and reset variables
 temp_index=-1;
-
 undo_time=-1;
 redo_time=-1;
 delet_time=-1;
@@ -223,9 +242,122 @@ delet_shake=0;
 //Set if the controller is editing
 global.editing=0;
 
-
+//If we're in the memobot menus
 savebot_open=0;
 
+
+//Background image to use while searching
+search_bkg=-4;
+
+search_bgk_shaded=-4;
+
+//Search menu surface
+search_surf=-4;
+
+
+//Page in the surface
+search_page=0;
+
+//Position in the page
+search_pagepos=0;
+
+
+//Get uniform for background shader
+usize = shader_get_uniform(shd_guassian_blur,"size");//uniform for width, height, radius
+
+//Get the maximum amount of pages for each type
+search_max_page_types[3] = 0;
+
+search_pagemax = 0;
+
+pageX[0]=0;
+pageType[0]=0;
+
+page_object[0,0]=0;
+
+
+
+max_pages=0;
+
+page_target_offset=0;
+page_offset=0;
+
+/*
+This should return pages with objects of the same type spread correctly
+*/
+
+var page = 0;
+var lastType = 0;
+for(var a=0; a&lt;4; a++){
+
+    //All entity classes should have a page by default
+    search_max_page_types[a]=1;
+    
+    var obj_index=0;
+    
+    var wefound=0;
+    
+    
+    //Go through all the elements and find the correct ones
+    for(var i=0; i&lt;array_length_1d(obj_controller.entityname)+1; i++){
+    
+      if(i&lt;array_length_1d(obj_controller.entityname)){
+      
+        var value = ds_map_find_value(global.entityclass,obj_controller.entityname[i]);
+        
+        if(value==a){
+           
+            wefound=1;
+        
+            if(obj_index==0){
+              show_debug_message("New page index set as "+string(value)); pageType[page]=value;}
+        
+           //Set object           
+           if(obj_index==0){lastType=value;  pageType[page]=value;}
+           
+           page_object[page,obj_index]=obj_controller.entityname[i];   
+              
+           obj_index++;
+           
+           //If we exceed the amount of objects in a page, we make a new one in the category
+           if(obj_index&gt;=7){
+           
+              search_max_page_types[a]++;
+              page++;
+              max_pages++;
+              pageX[page] = pageX[page-1]+128;
+              show_debug_message("New page index set [OVERRIDE FOUND,"+string(page)+"]");
+              obj_index=0;
+              wefound=0;
+              
+           
+           }
+           
+        }
+        
+       }else if(wefound){//No more objects of the same types have been found to fill the page
+       
+          search_max_page_types[a]++;
+          page++;
+          max_pages++;
+          pageX[page] = pageX[page-1]+128;
+          show_debug_message("New page index set [NO MORE ENTRIES,"+string(page)+"]");
+          obj_index=0;
+          wefound=0;
+       
+       }
+        
+    
+    }
+   
+    
+    
+}
+
+
+show_debug_message("The amount of circles is "+string(max_pages));
+page_radius[max_pages]=38;
+//page_radius[0]=72;
 
 
 </string>
@@ -344,7 +476,115 @@ instance_destroy(obj_mario_shadow);
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>///Search menu logic
+if(state==ControlState.searching)&amp;&amp;(room==rm_editor){
+
+   //Inputs
+   
+   //Close
+   var closeHover = point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
+                    view_xview[0]+view_wview[0]-27-8,
+                    view_yview[0]+27-8,
+                    view_xview[0]+view_wview[0]-27+8,
+                    view_yview[0]+27+8
+                    );
+   
+   if(keyboard_check_pressed(vk_escape) || ( mouse_check_button_pressed(mb_left) &amp;&amp; closeHover )){
+      instance_activate_object(obj_editor_entity); 
+      instance_activate_object(obj_mario_editor);
+      state=ControlState.normal;
+   }
+   
+   //Move
+   if(keyboard_check_pressed(vk_right)){
+      search_pagepos=0;
+      if(search_page&lt;max_pages-1){search_page++;}else{search_page=0;}
+   }
+   
+   if(keyboard_check_pressed(vk_left)){
+      search_pagepos=0;
+      if(search_page&gt;0){search_page--;}else{search_page=max_pages-1;}
+   }
+
+   //Select entity
+   /*
+   I don't think I'll ever add mouse support for the full slices the items take on the wheel
+   so for now it'll just check if the mouse is in the general position of the sprite
+   */
+   for(var i=0; i&lt;array_length_2d(page_object,search_page); i++;){
+   
+      var dist = 30*2+(page_radius[search_page]-30*2)/2;
+       
+       var X = view_wview[0]/2 + pageX[search_page]*2 - page_offset;
+       var Y = view_hview[0]/2;
+       
+       var ICOX=lengthdir_x(dist/2 ,360/array_length_2d(page_object,search_page)*i + 90);
+       var ICOY=lengthdir_y(dist/2,360/array_length_2d(page_object,search_page)*i + 90);
+       
+       var RECDIV=2.5;
+       var SPR=global.spritemap[? page_object[search_page,i]];
+       
+       if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
+          view_xview[0]+X+ICOX-16/(RECDIV/2)-3,
+          view_yview[0]+Y+ICOY-16/(RECDIV/2)-3,
+          view_xview[0]+X+ICOX+16/(RECDIV/2)+3,
+          view_yview[0]+Y+ICOY+16/(RECDIV/2)+3)){
+               search_pagepos=i;
+               
+               
+               if(mouse_check_button_pressed(mb_left)){
+                  //Put the entity selected in the list and shift all the other to 1 (pinning will come eventually)
+                  
+                  //Check if the entity is already in the list
+                  var pass=1;
+                  
+                  for(var a=0; a&lt;12; a++){
+                      if(ds_list_find_value(global.entity_list,a)==page_object[search_page,i]){
+                         pass=0;
+                      }  
+                  }
+                  
+                  if(pass){
+                     for(var a=1; a&lt;12; a++){
+                      ds_list_replace(global.entity_list,a-1,ds_list_find_value(global.entity_list,a));
+                     }
+                     ds_list_replace(global.entity_list,11,page_object[search_page,i]);
+                  }   
+                     
+                  instance_activate_object(obj_editor_entity); 
+                  instance_activate_object(obj_mario_editor);
+                  state=ControlState.normal;
+                  
+               }
+               
+       }
+   
+   }
+   
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>if(savebot_open){global.closing=2;}
+
+
 </string>
           </argument>
         </arguments>
@@ -369,24 +609,26 @@ instance_destroy(obj_mario_shadow);
             <kind>1</kind>
             <string>///Editor logic
 
+//Increase the idle variable
 with(obj_controller){ if(idling&lt;3700){idling++;} }
 
-
+//Stop logic if we're closing or not on the editor
 if(room!=rm_editor || global.closing){exit;}
 
+//Set up Discord RPC
 global.state="In the editor";
 global.details="Editing level '"+string(global.level_filename)+"'";
 global.icon="rpc_edit";
 
 //Update menu positions
+MenuOffset[0]=scr_approach(MenuOffset[0],MenuClose[0],0.1);
+MenuOffset[1]=scr_approach(MenuOffset[1],MenuClose[1],0.1);
+MenuOffset[2]=scr_approach(MenuOffset[2],MenuClose[2],0.1);
 
-    MenuOffset[0]=scr_approach(MenuOffset[0],MenuClose[0],0.1);
-    MenuOffset[1]=scr_approach(MenuOffset[1],MenuClose[1],0.1);
-    MenuOffset[2]=scr_approach(MenuOffset[2],MenuClose[2],0.1);
-
-
+//Update selected entity
 EntitySelected=obj_mousechek.entitycollision;
 
+//Wave variable
 w=sin(wt*0.1);
 wt++;
 
@@ -418,22 +660,7 @@ if(state==ControlState.normal){
        //Get out of the placing state
        enitityplace=0; selected_id=-1;
        global.editing=0;
-       
-       
-       //Get the entity id
-      
-       /*
-       if(entity.UsesSprite){
-          var xoff = sprite_get_xoffset(entity.UsesSprite);
-          var yoff = sprite_get_yoffset(entity.UsesSprite);
-          instance_create(entity.x+xoff,entity.y+yoff,obj_ring_effect);
-       }else{
-          instance_create(entity.x-32,entity.y-32,obj_ring_effect);
-       }*/
-       
-       
-       
-       
+                            
        //Interact with the entity
        with(EntitySelected){
        
@@ -445,7 +672,7 @@ if(state==ControlState.normal){
        
        
        
-    }else if(mouse_check_button_pressed(mb_left)&amp;&amp;(!global.editing)){
+    }else if(mouse_check_button_pressed(mb_left)&amp;&amp;(!global.editing)){//Set dragging ID
     
         Drag_id=EntitySelected;
       
@@ -460,13 +687,13 @@ if(state==ControlState.normal){
    (device_mouse_x(0)&lt;view_xview+view_wview-Rightmenu_width-6+Rightmenu_width*MenuOffset[1])
    &amp;&amp;(!instance_exists(obj_reset_rocket)){
     
+        //Wait a bit to drag
         if(Dragging&lt;1)&amp;&amp;(instance_exists(Drag_id))&amp;&amp;(EntitySelected)&amp;&amp;(!Placing){ if(Drag_id!=LatestEntity)&amp;&amp;(Drag_id.Edited==0){ Dragging+=0.35; } }
  
         if(Dragging&gt;=1)&amp;&amp;(instance_exists(Drag_id))&amp;&amp;(!Placing){
         
            //Get out of the placing state
            enitityplace=0; selected_id=-1;
-       
        
            //Get the entity id
            var entity = Drag_id;
@@ -482,7 +709,9 @@ if(state==ControlState.normal){
  
  if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2]+Rightmenu_width*MenuOffset[1],
  view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
+ 
     if(mouse_check_button_pressed(mb_left)){with(obj_controller){ idling=0; } state=ControlState.erase; global.cursor_angle=0;}
+    
  }
  
  
@@ -490,6 +719,7 @@ if(state==ControlState.normal){
 
   if(mouse_check_button(mb_left)){
   
+     //Use the eraser
      global.cursor_angle=45;
      with(obj_controller){ idling=0; }
      
@@ -505,9 +735,7 @@ if(state==ControlState.normal){
         }
      }
 
-     
-      
-     
+     //Erase
      if(EntitySelected){
      
         
@@ -522,8 +750,9 @@ if(state==ControlState.normal){
      }
      
        
-  }else if(mouse_check_button_released(mb_left)){
-     global.cursor_angle=0;
+  }else if(mouse_check_button_released(mb_left)){//Stop the eraser
+  
+        global.cursor_angle=0;
      
         with(obj_mario_editor){
              sprite_index=spr_mario_idle;
@@ -534,7 +763,7 @@ if(state==ControlState.normal){
   }
   
   
-  //Rubber
+  //Go back to the normal state
   if(point_in_circle(device_mouse_x(0),device_mouse_y(0),view_xview+view_wview+ButtonRight_X[2]+Rightmenu_width*MenuOffset[1],view_yview+ButtonRight_Y[2]+Rightmenu_top,10)){
   
    if(mouse_check_button_pressed(mb_left)){with(obj_controller){ idling=0; } state=ControlState.normal; global.cursor_angle=0;}
@@ -556,7 +785,20 @@ if(point_in_rectangle(device_mouse_x(0),device_mouse_y(0),
    view_yview+21+sprite_get_yoffset(spr_magnUI)-Topmenu_height*MenuOffset[0]
    )){
    
-      //if(mouse_check_button_pressed(mb_left)){ state=ControlState.searching; }
+      if(mouse_check_button_pressed(mb_left)){ 
+      
+                   with(obj_controller){ idling=0; } 
+                   
+                   //Create a background image
+                   if(sprite_exists(search_bkg)){ sprite_delete(search_bkg); }
+                   
+                   search_bkg=sprite_create_from_surface(application_surface,0,0,
+                   surface_get_width(application_surface),surface_get_height(application_surface),0,0,0,0);
+                 
+                   instance_deactivate_object(obj_editor_entity); 
+                   instance_deactivate_object(obj_mario_editor);
+                   state=ControlState.searching; 
+      }
    
 }
 
@@ -699,6 +941,8 @@ if(mouse_check_button_released(mb_left)){
 } 
 
 }
+
+//Keep view in room
 
 //Up
 if(view_yview[view_current]&lt;64){view_yview[view_current]+=8; view_yview[view_current]=64;}
@@ -1046,7 +1290,7 @@ temp_index=-1;
         file_text_readln(file);
           
         var buffer = (file_text_read_string(file));
-        show_debug_message("Loaded buffer ["+string(buffer)+"]");
+        //show_debug_message("Loaded buffer ["+string(buffer)+"]");
           
     file_text_close(file);
     
@@ -1060,7 +1304,7 @@ temp_index=-1;
         Scroll=real(ds_grid_get(levelmap,3,0));
         ClearCond=real(ds_grid_get(levelmap,4,0));
         
-        show_debug_message("Items found "+string(items));
+        //show_debug_message("Items found "+string(items));
         
 
         //Create the objects
@@ -1082,8 +1326,8 @@ temp_index=-1;
                  UsesSprite = real(ds_grid_get(levelmap,array_length_1d(Attribute)+3,pos+1));
             
             }
-             show_debug_message("Item created successfully at "
-             +string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
+             //show_debug_message("Item created successfully at "
+             //+string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
 
         }
         
@@ -1173,8 +1417,8 @@ if(room==rm_editor){
                ds_grid_add(levelmap,1,pos+1,string(x));
                ds_grid_add(levelmap,2,pos+1,string(y));
                
-               show_debug_message("Item loaded successfully at "
-             +string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
+               //show_debug_message("Item loaded successfully at "
+            // +string(ds_grid_get(levelmap,1,pos+1))+"/"+string(ds_grid_get(levelmap,2,pos+1)) );
               
                for(var a=0; a&lt;array_length_1d(Attribute); a++){
                    ds_grid_add(levelmap, a+3, pos+1, string(Attribute[a]));
@@ -1206,7 +1450,7 @@ if(room==rm_editor){
           
           }
     
-   
+          show_debug_message("Level '"+string(global.level_filename)+"' saved");
           global.saved=1;
 }
 </string>
@@ -1232,6 +1476,7 @@ if(room==rm_editor){
           <argument>
             <kind>1</kind>
             <string>surface_free(gui_surf);surface_free(grid_surf);
+if(surface_exists(search_surf)){surface_free(search_surf);}
 </string>
           </argument>
         </arguments>
@@ -1257,7 +1502,8 @@ if(room==rm_editor){
             <string>
 
 
-if(file_exists(working_directory+"\Levels\"+global.level_filename)&amp;&amp;(room==rm_editor)&amp;&amp;(!global.loaded)){
+if(file_exists(working_directory+"\Levels\"+global.level_filename)
+   &amp;&amp;(room==rm_editor)&amp;&amp;(!global.loaded)&amp;&amp;(global.level_filename!="") ){
    event_user(1);
    global.loaded=1;
 }
@@ -1332,9 +1578,9 @@ global.editing=0;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>
-if(room!=rm_editor || global.closing){exit;}
-
+            <string>///Draw on the GUI layer
+if(room!=rm_editor){if(surface_exists(gui_surf)){surface_free(gui_surf);} exit;}
+if(global.closing){if(surface_exists(gui_surf)){surface_free(gui_surf);} exit;}
 
 if(!surface_exists(gui_surf)){
    gui_surf=surface_create(display_get_gui_width(),display_get_gui_height());
@@ -1346,31 +1592,8 @@ surface_set_target(gui_surf);
 
 draw_clear_alpha(c_blue,0);
 
-//Shadows
 
-
-
-/*draw_primitive_begin(pr_trianglefan);
-draw_vertex_colour(display_get_gui_width()-Rightmenu_width-5,Rightmenu_top,c_black,0);
-draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Rightmenu_top,c_black,.25);
-draw_vertex_colour(display_get_gui_width()-Rightmenu_width,display_get_gui_height(),c_black,.25);
-draw_vertex_colour(display_get_gui_width()-Rightmenu_width-5,display_get_gui_height(),c_black,0);
-
-draw_primitive_end();
-
-
-
-
-draw_primitive_begin(pr_trianglefan);
-draw_vertex_colour(0,Topmenu_height-Topmenu_height*MenuOffset[0],c_black,0.25);
-draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height-Topmenu_height*MenuOffset[0],c_black,0.25);
-
-draw_vertex_colour(display_get_gui_width()-Rightmenu_width,Topmenu_height-Topmenu_height*MenuOffset[0]+5,c_black,0);
-draw_vertex_colour(0,Topmenu_height-Topmenu_height*MenuOffset[0]+5,c_black,0);
-draw_primitive_end();*/
-
-
-//
+//Top bar
 draw_set_colour(c_white);
 draw_set_alpha(0.4);
 draw_rectangle(0,0,display_get_gui_width(),Topmenu_height-Topmenu_height*MenuOffset[0],0);
@@ -1382,7 +1605,6 @@ var halfX=display_get_gui_width()/2;
 draw_rectangle(halfX-6,
 Topmenu_height-Topmenu_height*MenuOffset[0],halfX+6,Topmenu_height-Topmenu_height*MenuOffset[0]+4,0);
 
-
 if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
 halfX-6,Topmenu_height-Topmenu_height*MenuOffset[0],
 halfX+6,Topmenu_height-Topmenu_height*MenuOffset[0]+4)){
@@ -1391,15 +1613,8 @@ halfX+6,Topmenu_height-Topmenu_height*MenuOffset[0]+4)){
 
 }
 
-
 draw_line_width(0,Topmenu_height-Topmenu_height*MenuOffset[0],display_get_gui_width(),
 Topmenu_height-Topmenu_height*MenuOffset[0],1);
-
-
-
-
-//Top bar
-
 
 //Draw icons
 for(var a=0; a&lt;12; a++){
@@ -1410,15 +1625,14 @@ for(var a=0; a&lt;12; a++){
     draw_sprite_ext(spr_objectUI,0,X, 21-Topmenu_height*MenuOffset[0]  ,1,1,0,c_black,0.25);
     
     draw_sprite(spr_objectUI,
-    global.entityclass[? global.selected_entity[a]],X, 20-Topmenu_height*MenuOffset[0]);
+    global.entityclass[? ds_list_find_value(global.entity_list,a)],X, 20-Topmenu_height*MenuOffset[0]);
     
-    draw_sprite(global.spritemap[? global.selected_entity[a]],0,X, (21+Y)-Topmenu_height*MenuOffset[0]);
+    draw_sprite(global.spritemap[? ds_list_find_value(global.entity_list,a)],0,X, (21+Y)-Topmenu_height*MenuOffset[0]);
     
 }
 
 draw_sprite_ext(spr_magnUI,0,
 display_get_gui_width()-17,21-Topmenu_height*MenuOffset[0],1,1,0,c_black,0.25);
-
 
 draw_sprite(spr_magnUI,0,
 display_get_gui_width()-17,20-Topmenu_height*MenuOffset[0]);
@@ -1431,8 +1645,6 @@ draw_set_alpha(0.4);
 draw_rectangle(display_get_gui_width()-Rightmenu_width +Rightmenu_width*MenuOffset[1],
 Rightmenu_top,display_get_gui_width()+Rightmenu_width*MenuOffset[1],display_get_gui_height(),0);
 
-
-
 var halfY=Rightmenu_top + (display_get_gui_height()-Rightmenu_top)/2;
 
 if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
@@ -1443,15 +1655,11 @@ display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1],halfY+6)){
 
 }
 
-
-
 draw_set_alpha(1);
-
 
 draw_rectangle(
 display_get_gui_width()-Rightmenu_width-4+Rightmenu_width*MenuOffset[1],halfY-6,
 display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1],halfY+6,0);
-
 
 draw_line(display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1],
 Rightmenu_top-1,display_get_gui_width()-Rightmenu_width+Rightmenu_width*MenuOffset[1],display_get_gui_height());
@@ -1563,7 +1771,7 @@ if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
    Leftmenu_top+ButtonLeft_Y[4]+sprite_get_yoffset(ButtonLeft_Sprite[4]) )
 
 ){
-  if(mouse_check_button_pressed(mb_left)){
+  if(mouse_check_button_pressed(mb_left))&amp;&amp;(state!=ControlState.searching){
      with(obj_controller){ idling=0; }
      event_perform(ev_keypress, vk_enter);
   }
@@ -1572,6 +1780,7 @@ if(point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
 
 surface_reset_target();
 
+//Draw the surface
 if(state!=ControlState.searching){
  if(surface_exists(gui_surf)){draw_surface(gui_surf,0,0);}
 }
@@ -1606,6 +1815,314 @@ draw_set_colour(c_black); draw_set_halign(fa_left);
 draw_set_colour(c_white);
 
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Search menu
+/*
+Just like in Super Mario Maker 2, a menu composed of wheels with all the items divided by type
+the items are already sorted in the create event so now it's just a matter of putting it all together
+*/
+
+//Free all the surfaces and temp sprites when not needed and exit the event
+if(state!=ControlState.searching){
+   if(surface_exists(search_surf)){surface_free(search_surf);}
+   if(sprite_exists(search_bkg)){sprite_delete(search_bkg);}
+   if(sprite_exists(search_bgk_shaded)){sprite_delete(search_bgk_shaded);}
+   exit;
+}
+
+//Draw the background-------------
+
+/*
+A screenshot of the current editor but blurred and with a white transparent layer, having the shader
+run every frame took a toll on performance so I just create a new sprite from the previously taken sprite
+*/
+
+//Add shader to the sprite and make a new sprite
+if(sprite_exists(search_bkg))&amp;&amp;(!sprite_exists(search_bgk_shaded)){
+
+   var surf = surface_create(display_get_gui_width(),display_get_gui_height());
+ 
+   surface_set_target(surf);
+   
+      shader_set(shd_guassian_blur);
+      shader_set_uniform_f(usize,512/2,512/2,2)//width,height,radius
+      
+      draw_sprite_stretched(search_bkg,0,0,0,display_get_gui_width(),display_get_gui_height());
+      
+      shader_reset();
+   
+   surface_reset_target();
+   
+   
+   
+   search_bgk_shaded = 
+       sprite_create_from_surface(surf,0,0,surface_get_width(surf),surface_get_height(surf),0,0,0,0);
+   
+   surface_free(surf);
+   
+   sprite_delete(search_bkg);
+   
+}
+
+//Draw the new sprite
+if(sprite_exists(search_bgk_shaded)){
+    
+    draw_sprite_stretched(search_bgk_shaded,0,0,0,display_get_gui_width(),display_get_gui_height());
+
+}
+
+draw_set_alpha(0.4);
+draw_set_colour(c_white);
+draw_rectangle(0,0,display_get_gui_width(),display_get_gui_height(),0);
+draw_set_alpha(1);
+
+//Draw the menu
+if(!surface_exists(search_surf)){
+
+   search_surf = surface_create(display_get_gui_width()*2,display_get_gui_height()*2);
+
+}else{
+
+   surface_set_target(search_surf);
+   
+   draw_clear_alpha(c_black,0);
+   
+   //Draw all the wheels
+   for(var a=0; a&lt;max_pages; a++){
+   
+       //Interpolate scale
+       if(search_page==a){ page_radius[a]=lerp(page_radius[a], 72*2, 0.2); var selected = true; }
+       else{page_radius[a]=lerp(page_radius[a], (72-38)*2, 0.2); var selected = false;}
+   
+       //Wheel colour
+       switch(pageType[a]){
+              case 0:
+                  draw_set_colour(rgb_to_bgr($D5ECF2));
+              break;
+              case 1:
+                  draw_set_colour(rgb_to_bgr($F2D5F1));
+              break;
+              case 2:
+                  draw_set_colour(rgb_to_bgr($D9F4D5));
+              break;
+              case 3:
+                  draw_set_colour(rgb_to_bgr($F2F0D5));
+              break;
+       }
+   
+       //Get X and Y positions
+       var X = surface_get_width(search_surf)/2 + pageX[a]*2 - page_offset;
+       var Y = surface_get_height(search_surf)/2;
+       
+       draw_set_circle_precision(64);
+       draw_circle(X, Y,page_radius[a],0);
+       
+       var SPRSCA = 2;
+       var RECDIV = 2;
+       
+       //Draw a darker wheel when not selected and an arrow
+       if(!selected){
+           
+          switch(pageType[a]){
+              case 0:
+                  draw_set_colour(rgb_to_bgr($93A2A5));
+              break;
+              case 1:
+                  draw_set_colour(rgb_to_bgr($A545A4));
+              break;
+              case 2:
+                  draw_set_colour(rgb_to_bgr($98AA94));
+              break;
+              case 3:
+                  draw_set_colour(rgb_to_bgr($A5A493));
+              break;
+              } 
+              
+          draw_circle(X,Y,page_radius[a],0);
+          
+          
+          draw_set_colour(rgb_to_bgr($5C1C1D));
+          
+          if(search_page&lt;a){
+             draw_triangle(X+20,Y,X-12,Y-16,X-12,Y+16,0);
+          }else{
+             draw_triangle(X-20,Y,X+12,Y-16,X+12,Y+16,0);
+          }
+          
+          var SPRSCA=1.75;
+          var RECDIV=2.5;
+       
+       
+       }
+       
+       //Draw icons
+       for(var i=0; i&lt;array_length_2d(page_object,a); i++;){
+       
+           if(selected){ var dist = 30*2+(page_radius[a]-30*2)/2; }else{
+              var dist = page_radius[a]-15*2;
+           }
+       
+           var ICOX=lengthdir_x(dist ,360/array_length_2d(page_object,a)*i + 90);
+           var ICOY=lengthdir_y(dist,360/array_length_2d(page_object,a)*i + 90);
+          
+           
+           var SPR=global.spritemap[? page_object[a,i]];
+           draw_set_colour(c_white);
+           
+           draw_rectangle(X + ICOX - 32/RECDIV-1-2,
+           Y + ICOY - 32/RECDIV-1-2,
+           X + ICOX + 32/RECDIV+2,
+           Y + ICOY + 32/RECDIV+2,
+           0);
+       
+           draw_sprite_ext(SPR,
+           0,
+           X + ICOX,
+           Y + ICOY,
+           SPRSCA,SPRSCA,0,c_white,1);
+           
+           //Select item
+           
+           /*if( point_in_rectangle(device_mouse_x_to_gui(0),device_mouse_y_to_gui(0),
+                                  view_xview + X + ICOX - 32/RECDIV-1-2,view_yview + Y + ICOY - 32/RECDIV-1-2,
+                                  view_xview + X + ICOX + 32/RECDIV+2,view_yview + Y + ICOY + 32/RECDIV+2
+           )){
+           
+               search_pagepos=i;
+               show_debug_message("yeah");
+               
+           }*/
+               
+           
+       }
+       
+       //What to draw when selected
+       if(selected){
+       
+              //Draw the lines to separate items
+              switch(pageType[a]){
+              case 0:
+                  draw_set_colour(rgb_to_bgr($1FD0FE));
+              break;
+              case 1:
+                  draw_set_colour(rgb_to_bgr($F164EE));
+              break;
+              case 2:
+                  draw_set_colour(rgb_to_bgr($75F13B));
+              break;
+              case 3:
+                  draw_set_colour(rgb_to_bgr($FFF234));
+              break;
+              }    
+              
+           
+           for(var i=0; i&lt;array_length_2d(page_object,a); i++;){   
+              
+              draw_line_width(X,Y,X+floor(lengthdir_x(page_radius[a]-1 ,360/array_length_2d(page_object,a)*i +64.5))
+              ,Y+floor(lengthdir_y(page_radius[a]+1,360/array_length_2d(page_object,a)*i + 64.5)),4);   
+           
+           }
+           
+           
+          //Draw an item preview
+          draw_circle(X,Y,page_radius[a]-38*2,0);
+          
+          draw_set_colour(c_white);
+          
+          var SPRSCALE=4;
+          
+          var BIGSP = global.spritemap[? page_object[a,search_pagepos]];
+          draw_rectangle(X-sprite_get_width(BIGSP),Y+8-sprite_get_height(BIGSP)-1,
+          X+sprite_get_width(BIGSP)+1,Y+8+sprite_get_height(BIGSP),0);
+          
+          draw_sprite_ext(BIGSP,0,
+          X+1,Y+8,SPRSCALE,SPRSCALE,0,c_white,1);
+          
+          //Name tag
+          var STRI = global.entityName[? page_object[a,search_pagepos]];
+          
+          var STRSCALE = 0.4;
+          
+          var STRY = Y+8-sprite_get_height(BIGSP)-18;
+          
+          draw_set_font(fnt_mario_big);
+          draw_set_colour(rgb_to_bgr($5C1C1D));
+          
+          
+          if(!is_undefined(STRI)){
+          
+          draw_rectangle(X-(string_width(STRI)*STRSCALE)/2,
+          STRY+1,
+          X+(string_width(STRI)*STRSCALE)/2-2,
+          STRY+1-string_height(STRI)*(STRSCALE*2),0);
+          
+          draw_circle(X-(string_width(STRI)*STRSCALE)/2,
+          STRY+1-string_height(STRI)*(STRSCALE),
+          string_height(STRI)*(STRSCALE)+0.5,0);
+          
+          draw_circle(X+(string_width(STRI)*STRSCALE)/2,
+          STRY+1-string_height(STRI)*(STRSCALE),
+          string_height(STRI)*(STRSCALE)+0.5,0);
+          
+          }
+          
+          draw_triangle(X,STRY+6,X-4,STRY,X+4,STRY,0);
+          
+          
+           draw_set_colour(c_white);
+          draw_set_halign(fa_center); draw_set_valign(fa_bottom);
+          draw_text_transformed(X,STRY-1,
+          STRI,STRSCALE,STRSCALE,0);
+          
+          
+       }
+       
+   
+   }
+   
+   //Draw close button
+   draw_set_colour(c_black);
+   draw_set_alpha(0.4);
+   
+   draw_rectangle(surface_get_width(search_surf)-27*2-16,27*2-16+2,surface_get_width(search_surf)-27*2+16,27*2+16+2,0);
+   draw_set_alpha(1);
+   draw_rectangle(surface_get_width(search_surf)-27*2-16,27*2-16,surface_get_width(search_surf)-27*2+16,27*2+16,0);
+   draw_set_colour(c_white);
+   draw_line_width(surface_get_width(search_surf)-27*2-10,27*2-10,surface_get_width(search_surf)-27*2+10,27*2+10,4);
+   draw_line_width(surface_get_width(search_surf)-27*2-10,27*2+10,surface_get_width(search_surf)-27*2+10,27*2-10,4);
+   
+   draw_set_circle_precision(24);
+   
+   surface_reset_target();
+   
+   draw_surface_ext(search_surf,0,0,0.5,0.5,0,c_white,1);
+   
+   
+   page_target_offset=(128*2)*search_page;
+   page_offset=lerp(page_offset,page_target_offset,0.5);
+   
+   
+
+}
 </string>
           </argument>
         </arguments>
@@ -1702,7 +2219,7 @@ if(state==ControlState.normal){
            default: 
            
            draw_sprite_ext(
-           global.spritemap[? global.selected_entity[selected_id]],0,
+           global.spritemap[?  ds_list_find_value(global.entity_list,selected_id)],0,
            device_mouse_x(0),device_mouse_y(0),1,1,0,c_white,1);
            
            break;
@@ -1745,7 +2262,7 @@ if(state==ControlState.normal){
    
       with(instance_create(device_mouse_x(0)-8,device_mouse_y(0)-8,obj_editor_entity)){
       
-           Entity_id=global.selected_entity[other.selected_id];
+           Entity_id=ds_list_find_value(global.entity_list,other.selected_id); 
       
            //Special properties
            switch(Entity_id){
@@ -1802,12 +2319,15 @@ if(state==ControlState.normal){
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if(!keyboard_check(vk_alt)){
+            <string>if(!keyboard_check(vk_alt)&amp;&amp;(room==rm_editor || room==rm_ingame)
+&amp;&amp;(state!=ControlState.searching)){
 
 obj_controller.fade_alpha=1;
 
 if(room==rm_editor){
         
+  if(state!=ControlState.searching){
+
     audio_sound_gain(global.makersong,0,0);
     audio_sound_gain(global.playsong,1,0);
 
@@ -1818,6 +2338,8 @@ if(room==rm_editor){
     room_goto(rm_ingame);
     
     alarm[1]=1;
+
+  }
 
 
 }

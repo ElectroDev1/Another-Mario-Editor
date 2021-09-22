@@ -3,7 +3,42 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
-  <datafiles number="3" name="datafiles"/>
+  <datafiles number="5" name="datafiles">
+    <datafile>
+      <name>Entity_list.txt</name>
+      <exists>-1</exists>
+      <size>0</size>
+      <exportAction>2</exportAction>
+      <exportDir></exportDir>
+      <overwrite>0</overwrite>
+      <freeData>-1</freeData>
+      <removeEnd>0</removeEnd>
+      <store>0</store>
+      <ConfigOptions>
+        <Config name="Default">
+          <CopyToMask>9223372036854775807</CopyToMask>
+        </Config>
+      </ConfigOptions>
+      <filename>Entity_list.txt</filename>
+    </datafile>
+    <datafile>
+      <name>Selected_entities.txt</name>
+      <exists>-1</exists>
+      <size>119</size>
+      <exportAction>2</exportAction>
+      <exportDir></exportDir>
+      <overwrite>0</overwrite>
+      <freeData>-1</freeData>
+      <removeEnd>0</removeEnd>
+      <store>0</store>
+      <ConfigOptions>
+        <Config name="Default">
+          <CopyToMask>9223372036854775807</CopyToMask>
+        </Config>
+      </ConfigOptions>
+      <filename>Selected_entities.txt</filename>
+    </datafile>
+  </datafiles>
   <NewExtensions>
     <extension index="0">extensions\GridBuffer</extension>
     <extension index="1">extensions\NekoPresence</extension>
@@ -42,6 +77,7 @@
       <sprites name="Special item icons">
         <sprite>sprites\spr_arrow_icon</sprite>
         <sprite>sprites\spr_bridge_icon</sprite>
+        <sprite>sprites\spr_terrain_icon</sprite>
       </sprites>
       <sprites name="In game">
         <sprite>sprites\spr_coin_hud</sprite>
@@ -116,6 +152,7 @@
     <sprites name="Others">
       <sprite>sprites\spr_cursor</sprite>
       <sprite>sprites\spr_controller</sprite>
+      <sprite>sprites\spr_hohe</sprite>
     </sprites>
   </sprites>
   <backgrounds name="background">
@@ -138,11 +175,15 @@
     <script>scripts\draw_pie.gml</script>
     <script>scripts\window_command_toggle.gml</script>
     <script>scripts\scr_draw_message.gml</script>
+    <script>scripts\rgb_to_bgr.gml</script>
     <script>scripts\unix_timestamp.gml</script>
     <scripts name="Level">
       <script>scripts\scr_save_level.gml</script>
     </scripts>
   </scripts>
+  <shaders name="shaders">
+    <shader type="GLSLES">shaders\shd_guassian_blur.shader</shader>
+  </shaders>
   <fonts name="fonts">
     <font>fonts\fnt_mario_big</font>
     <font>fonts\fnt_mario</font>
@@ -208,6 +249,7 @@
     <objects name="Others">
       <object>objects\obj_mousechek</object>
       <object>objects\obj_levelselect_controller</object>
+      <object>objects\obj_hohe</object>
     </objects>
   </objects>
   <rooms name="rooms">

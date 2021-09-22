@@ -1,0 +1,14 @@
+Coin
+MetalBlock
+FlipBlock
+QuestBlock
+InvBlock
+Spiketrap
+OnOff_switch
+OnOff_block_ON
+OnOff_block_OFF
+Cloud
+Arrow
+Bridge
+Firebar
+Spring
